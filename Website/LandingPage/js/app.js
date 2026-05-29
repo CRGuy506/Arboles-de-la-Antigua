@@ -8,7 +8,7 @@
 
 const mainNav = document.getElementById('mainNav');
 const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const prefersReducedMotionApp = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function closeMobileMenu() {
   if (!mainNav || !mobileMenuToggle) return;
@@ -70,7 +70,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     if (target) {
       e.preventDefault();
       target.scrollIntoView({
-        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+        behavior: prefersReducedMotionApp ? 'auto' : 'smooth',
         block: 'start'
       });
     }

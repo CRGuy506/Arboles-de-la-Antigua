@@ -2,8 +2,11 @@
  * app.js - Main application initialization
  *
  * Features:
- *   - Smooth scroll behavior for anchor links
- *   - Mobile navigation toggle behavior
+ *   - Mobile navigation toggle (open/close, Escape key, outside-click, resize reset)
+ *   - Smooth scroll behavior for all in-page anchor links
+ *
+ * Note: uses prefersReducedMotionApp (not prefersReducedMotion) to avoid
+ * global const collision with the identically-named variable in animations.js.
  */
 
 const mainNav = document.getElementById('mainNav');

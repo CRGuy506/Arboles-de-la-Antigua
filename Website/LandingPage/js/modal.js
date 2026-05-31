@@ -28,13 +28,14 @@ function lockBodyScroll() {
 }
 
 function unlockBodyScroll() {
+  const restoreY = lockedScrollY;
   document.body.classList.remove('modal-open');
   document.body.style.position = '';
   document.body.style.top = '';
   document.body.style.left = '';
   document.body.style.right = '';
   document.body.style.width = '';
-  window.scrollTo(0, lockedScrollY);
+  window.scrollTo({ top: restoreY, behavior: 'instant' });
 }
 
 /**
@@ -112,20 +113,118 @@ document.addEventListener('click', (e) => {
   if (trigger) {
     const modalId = trigger.getAttribute('data-modal');
 
-    if (modalId === 'impacto-demo') {
-      openModal({
-        title: 'Prueba de ventana emergente',
-        body: `
-          <p>Este es un texto de prueba aleatorio para validar el modal.</p>
-          <p>Los árboles urbanos no solo dan sombra: también reducen ruido, refrescan calles y mejoran la calidad del aire de forma medible.</p>
+    const allTranslations = window.ADLA_TRANSLATIONS || {};
+    const lang = localStorage.getItem('adla-lang') || 'es';
+    const fallback = allTranslations.es || {};
+    const t = allTranslations[lang] || fallback;
+
+    if (modalId === 'about-photo') {
+      const titleKey = trigger.getAttribute('data-photo-title-key') || '';
+      const altKey = trigger.getAttribute('data-photo-alt-key') || '';
+      const photoSrc = (trigger.getAttribute('data-photo-src') || '').trim();
+
+      const title = (titleKey && (t[titleKey] || fallback[titleKey])) || '';
+      const alt = (altKey && (t[altKey] || fallback[altKey])) || title || 'Photo';
+      const fallbackBody = t.aboutPhotoFallbackBody || fallback.aboutPhotoFallbackBody || '';
+
+      let body = fallbackBody;
+      if (photoSrc) {
+        body = `
           <img
-            src="https://picsum.photos/seed/arboles-antigua/720/420"
-            alt="Imagen aleatoria de prueba"
-            style="width:100%;border-radius:14px;margin-top:0.8rem;display:block;"
+            src="${photoSrc}"
+            alt="${alt}"
+            style="width:100%;max-height:min(75vh,780px);object-fit:contain;border-radius:14px;display:block;background:color-mix(in srgb, var(--sky) 70%, #fff 30%);"
           />
-        `
-      });
+        `;
+      }
+
+      openModal({ title, body });
+      return;
     }
+
+    const modalConfigById = {
+      'join-whatsapp': { titleKey: 'joinChatTitle', bodyKey: 'joinChatBodyHtml' },
+      'chip-temp': { titleKey: 'valueTemp', bodyKey: 'modalTempBodyHtml' },
+      'chip-landscape': { titleKey: 'valueLandscape', bodyKey: 'modalLandscapeBodyHtml' },
+      'chip-wildlife': { titleKey: 'valueWildlife', bodyKey: 'modalWildlifeBodyHtml' },
+      'chip-climate': { titleKey: 'valueClimate', bodyKey: 'modalClimateBodyHtml' },
+      'chip-cohesion': { titleKey: 'valueCohesion', bodyKey: 'modalCohesionBodyHtml' },
+      'chip-security': { titleKey: 'valueSecurity', bodyKey: 'modalSecurityBodyHtml' },
+      'event-info': { titleKey: 'eventInfoTitle', bodyKey: 'eventInfoBodyHtml' },
+      'event-agenda': { titleKey: 'eventAgendaImageTitle', bodyKey: 'eventAgendaImageBodyHtml' }
+    };
+
+    const modalConfig = modalConfigById[modalId];
+    if (!modalConfig) {
+      return;
+    }
+
+    const title = t[modalConfig.titleKey] || fallback[modalConfig.titleKey] || '';
+    let body = t[modalConfig.bodyKey] || fallback[modalConfig.bodyKey] || '';
+
+    // Append a translatable video CTA for the security modal when URL is provided.
+    if (modalId === 'chip-security') {
+      const videoUrl = t.modalSecurityVideoUrl || fallback.modalSecurityVideoUrl || '';
+      const videoCta = t.modalSecurityVideoCta || fallback.modalSecurityVideoCta || 'Ver video';
+      const isValidVideoUrl = /^https?:\/\//i.test(videoUrl);
+
+      if (isValidVideoUrl) {
+        body += `
+          <p>
+            <a href="${videoUrl}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="display:inline-block;">
+              ${videoCta}
+            </a>
+          </p>
+        `;
+      }
+    }
+
+    if (modalId === 'event-info' || modalId === 'event-agenda') {
+      const imageUrlKey = modalId === 'event-info' ? 'eventInfoImageUrl' : 'eventAgendaImageUrl';
+      const imageAltKey = modalId === 'event-info' ? 'eventInfoImageAlt' : 'eventAgendaImageAlt';
+      const imageUrl = t[imageUrlKey] || fallback[imageUrlKey] || '';
+      const imageAlt = t[imageAltKey] || fallback[imageAltKey] || '';
+      const hasImageUrl = imageUrl && !/^\s*$/.test(imageUrl);
+
+      if (hasImageUrl) {
+        body += `
+          <img
+            src="${imageUrl}"
+            alt="${imageAlt}"
+            style="width:100%;border-radius:14px;margin-top:0.9rem;display:block;"
+          />
+        `;
+      }
+    }
+
+    if (modalId === 'join-whatsapp') {
+      const qrImageUrl = t.joinChatQrImageUrl || fallback.joinChatQrImageUrl || '';
+      const qrImageAlt = t.joinChatQrImageAlt || fallback.joinChatQrImageAlt || '';
+      const chatUrl = t.joinChatUrl || fallback.joinChatUrl || '';
+      const chatCta = t.joinChatButtonCta || fallback.joinChatButtonCta || 'Unirse al chat';
+
+      if (qrImageUrl && !/^\s*$/.test(qrImageUrl)) {
+        body += `
+          <img
+            src="${qrImageUrl}"
+            alt="${qrImageAlt}"
+            style="width:min(260px, 100%);border-radius:14px;margin:0.9rem auto 0;display:block;"
+          />
+        `;
+      }
+
+      if (/^https?:\/\//i.test(chatUrl)) {
+        body += `
+          <p style="text-align:center;margin-top:1.1rem;">
+            <a href="${chatUrl}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="display:inline-block;">
+              ${chatCta}
+            </a>
+          </p>
+        `;
+      }
+    }
+
+    openModal({ title, body });
   }
 });
 

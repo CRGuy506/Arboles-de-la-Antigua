@@ -109,7 +109,16 @@
               <line x1="18.36" y1="5.64"  x2="19.78" y2="4.22"/>
             </svg>
           </button>
-          <a href="#evento" class="btn-cta-sm" data-i18n="navCta">Inscríbete →</a>
+          <button
+            type="button"
+            class="btn-cta-sm"
+            data-modal="join-whatsapp"
+            data-i18n="navCta"
+            aria-label="Abrir información de ingreso al chat"
+            data-i18n-attr="aria-label:joinChatAria"
+          >
+            Inscríbete →
+          </button>
         </div>
       </div>
     </div>
@@ -145,22 +154,22 @@
         <div class="hero-visual float-anim" aria-hidden="true">
           <div class="hero-card">
             <div class="hero-card-title" data-i18n="heroCardTitle">Patrimonio verde vivo</div>
-            <div class="hero-card-sub" data-i18n="heroCardSub">La Antigua Guatemala, Sacatepéquez</div>
+            <div class="hero-card-sub" data-i18n="heroCardSub">Residencial La Antigua, La Unión, Cartago</div>
             <div class="stat-row">
               <div class="stat-box">
-                <div class="stat-number">400+</div>
-                <div class="stat-label" data-i18n="statTrees">Árboles catalogados</div>
+                <div class="stat-number">XX+</div>
+                <div class="stat-label" data-i18n="statTrees">Árboles y plantas catalogadas</div>
               </div>
               <div class="stat-box">
-                <div class="stat-number">12</div>
-                <div class="stat-label" data-i18n="statNeighborhoods">Barrios activos</div>
+                <div class="stat-number">70+</div>
+                <div class="stat-label" data-i18n="statNeighborhoods">Casas participantes</div>
               </div>
               <div class="stat-box">
-                <div class="stat-number">8</div>
+                <div class="stat-number">XX</div>
                 <div class="stat-label" data-i18n="statYears">Años de labor</div>
               </div>
               <div class="stat-box">
-                <div class="stat-number">200+</div>
+                <div class="stat-number">XX+</div>
                 <div class="stat-label" data-i18n="statVolunteers">Voluntarios</div>
               </div>
             </div>
@@ -179,20 +188,53 @@
     <div class="container">
       <div class="about-layout">
 
-        <div class="about-visual" aria-hidden="true">
+        <div class="about-visual">
           <div class="about-mosaic">
             <div class="mosaic-tile">
-              <div class="mosaic-fill mosaic-fill-tall tile-a">🌳</div>
+              <button
+                type="button"
+                class="mosaic-fill mosaic-fill-tall tile-a about-photo-tile"
+                data-modal="about-photo"
+                data-photo-src="https://placehold.co/900x1200/5f8f52/ffffff?text=IMAGEN+DE+ESMERALDA+CON+ARBOLES"
+                data-photo-title-key="aboutPhoto1Title"
+                data-photo-alt-key="aboutPhoto1Alt"
+                aria-label="Abrir foto del equipo en tamaño completo"
+                data-i18n-attr="aria-label:aboutPhoto1Aria;title:aboutPhoto1Aria"
+              >
+                <img src="https://placehold.co/900x1200/5f8f52/ffffff?text=IMAGEN+DE+ESMERALDA+CON+ARBOLES" alt="Foto del equipo vecinal" data-i18n-attr="alt:aboutPhoto1Alt" loading="lazy" />
+              </button>
             </div>
             <div class="mosaic-tile">
-              <div class="mosaic-fill tile-b">🌱</div>
+              <button
+                type="button"
+                class="mosaic-fill tile-b about-photo-tile"
+                data-modal="about-photo"
+                data-photo-src="https://placehold.co/900x700/7aa95c/ffffff?text=IMAGEN+DE+SIEMBRA+DE+CUADRILLAS"
+                data-photo-title-key="aboutPhoto2Title"
+                data-photo-alt-key="aboutPhoto2Alt"
+                aria-label="Abrir foto de actividad comunitaria en tamaño completo"
+                data-i18n-attr="aria-label:aboutPhoto2Aria;title:aboutPhoto2Aria"
+              >
+                <img src="https://placehold.co/900x700/7aa95c/ffffff?text=IMAGEN+DE+SIEMBRA+DE+CUADRILLAS" alt="Foto de actividad comunitaria" data-i18n-attr="alt:aboutPhoto2Alt" loading="lazy" />
+              </button>
             </div>
             <div class="mosaic-tile">
-              <div class="mosaic-fill tile-c">🍃</div>
+              <button
+                type="button"
+                class="mosaic-fill tile-c about-photo-tile"
+                data-modal="about-photo"
+                data-photo-src="https://placehold.co/900x700/4b7a46/ffffff?text=IMAGEN+DE+VECINOS+CON+NUEVAS+PLANTAS"
+                data-photo-title-key="aboutPhoto3Title"
+                data-photo-alt-key="aboutPhoto3Alt"
+                aria-label="Abrir foto de jornada de siembra en tamaño completo"
+                data-i18n-attr="aria-label:aboutPhoto3Aria;title:aboutPhoto3Aria"
+              >
+                <img src="https://placehold.co/900x700/4b7a46/ffffff?text=IMAGEN+DE+VECINOS+CON+NUEVAS+PLANTAS" alt="Foto de jornada de siembra" data-i18n-attr="alt:aboutPhoto3Alt" loading="lazy" />
+              </button>
             </div>
           </div>
           <div class="floating-badge">
-            <div class="badge-number">2016</div>
+            <div class="badge-number">XXXX</div>
             <div class="badge-text" data-i18n="aboutFounded">Fundados</div>
           </div>
         </div>
@@ -200,34 +242,63 @@
         <div class="about-content">
           <span class="section-eyebrow" data-i18n="aboutEyebrow">🌿 Quiénes somos</span>
           <h2 class="about-heading" id="nosotros-title" data-i18n-html="aboutHeadingHtml">
-            Raíces profundas,<br/><em>ciudad floreciente.</em>
+            Iniciativa vecinal,<br/><em>impacto duradero.</em>
           </h2>
 
           <p class="about-body" data-i18n="aboutBody1">
-            Árboles de la Antigua nació del amor compartido por el paisaje histórico de nuestra ciudad. Somos vecinos, profesionales y voluntarios unidos por la convicción de que los árboles urbanos son parte esencial del patrimonio cultural, ambiental y emocional de La Antigua Guatemala.
+            Árboles de La Antigua es una iniciativa vecinal voluntaria enfocada en promover y maximizar los beneficios de los árboles y arbustos urbanos dentro del residencial.
           </p>
           <p class="about-body" data-i18n="aboutBody2">
-            Trabajamos en coordinación con la municipalidad, organizaciones internacionales y la comunidad para catalogar, proteger y renovar el arbolado urbano, garantizando que las generaciones futuras hereden una ciudad igualmente verde y hermosa.
+            Trabajamos de forma organizada entre vecinos para sembrar, mantener y proteger el arbolado urbano, mejorando la calidad de vida de la comunidad mediante espacios más frescos, verdes y activos.
+          </p>
+          <p class="about-body" data-i18n="aboutBody3">
+            Nuestro enfoque combina acción comunitaria, coordinación con la municipalidad y buenas prácticas para asegurar que el crecimiento del arbolado sea sostenible a largo plazo.
           </p>
 
-          <div class="values-grid" role="list" aria-label="Nuestros valores" data-i18n-attr="aria-label:aboutValuesAria">
-            <div class="value-chip" role="button" tabindex="0" data-modal="impacto-demo" aria-label="Abrir ventana de prueba de impacto ambiental">
+          <p class="about-chip-hint" data-i18n="aboutChipsHint">
+            Toque un beneficio para ver más detalles.
+          </p>
+
+          <div class="values-grid" role="list" aria-label="Principales beneficios" data-i18n-attr="aria-label:aboutValuesAria">
+            <div class="value-chip" role="button" tabindex="0" data-modal="chip-temp" aria-label="Ver detalles: Reducción de temperatura" data-i18n-attr="aria-label:valueTempAria">
+              <span class="value-icon" aria-hidden="true">🌡️</span>
+              <span data-i18n="valueTemp">Reducción de temperatura</span>
+            </div>
+            <div class="value-chip" role="button" tabindex="0" data-modal="chip-landscape" aria-label="Ver detalles: Valor paisajístico y comunitario" data-i18n-attr="aria-label:valueLandscapeAria">
+              <span class="value-icon" aria-hidden="true">🏡</span>
+              <span data-i18n="valueLandscape">Valor paisajístico y comunitario</span>
+            </div>
+            <div class="value-chip" role="button" tabindex="0" data-modal="chip-wildlife" aria-label="Ver detalles: Hábitat para vida silvestre" data-i18n-attr="aria-label:valueWildlifeAria">
+              <span class="value-icon" aria-hidden="true">🦜</span>
+              <span data-i18n="valueWildlife">Hábitat para vida silvestre</span>
+            </div>
+            <div class="value-chip" role="button" tabindex="0" data-modal="chip-climate" aria-label="Ver detalles: Mitigación del cambio climático" data-i18n-attr="aria-label:valueClimateAria">
               <span class="value-icon" aria-hidden="true">🌍</span>
-              <span data-i18n="valueImpact">Impacto ambiental</span>
+              <span data-i18n="valueClimate">Mitigación del cambio climático</span>
             </div>
-            <div class="value-chip" role="listitem">
+            <div class="value-chip" role="button" tabindex="0" data-modal="chip-cohesion" aria-label="Ver detalles: Cohesión y organización vecinal" data-i18n-attr="aria-label:valueCohesionAria">
               <span class="value-icon" aria-hidden="true">🤝</span>
-              <span data-i18n="valueCommunity">Comunidad activa</span>
+              <span data-i18n="valueCohesion">Cohesión y organización vecinal</span>
             </div>
-            <div class="value-chip" role="listitem">
-              <span class="value-icon" aria-hidden="true">📚</span>
-              <span data-i18n="valueEducation">Educación ambiental</span>
-            </div>
-            <div class="value-chip" role="listitem">
-              <span class="value-icon" aria-hidden="true">🏛️</span>
-              <span data-i18n="valueHeritage">Patrimonio histórico</span>
+            <div class="value-chip" role="button" tabindex="0" data-modal="chip-security" aria-label="Ver detalles: Seguridad comunitaria" data-i18n-attr="aria-label:valueSecurityAria">
+              <span class="value-icon" aria-hidden="true">🛡️</span>
+              <span data-i18n="valueSecurity">Seguridad comunitaria</span>
             </div>
           </div>
+
+          <h3 class="about-subheading" data-i18n="aboutOrgHeading">
+            Organización comunitaria
+          </h3>
+          <p class="about-body" data-i18n="aboutOrgBody">
+            El trabajo se organiza mediante agrupaciones voluntarias de vecinos, incluyendo cuadrillas de siembra y mantenimiento, un grupo técnico, un grupo social, asesoría forestal y apoyos puntuales según las necesidades del proyecto.
+          </p>
+
+          <h3 class="about-subheading" data-i18n="aboutMunicipalHeading">
+            Involucramiento municipal
+          </h3>
+          <p class="about-body" data-i18n="aboutMunicipalBody">
+            La iniciativa colabora con la Municipalidad de La Unión en actividades de arborización urbana y fortalecimiento comunitario. A mediano plazo, Árboles de La Antigua busca consolidar sus prácticas, herramientas y aprendizajes para apoyar a otras comunidades interesadas en desarrollar proyectos similares dentro y fuera del cantón.
+          </p>
         </div>
 
       </div>
@@ -246,32 +317,62 @@
           <div>
             <span class="event-eyebrow" data-i18n="eventEyebrow">🔔 Próximo evento</span>
             <h2 class="event-title" id="evento-title">
-              <span data-i18n-html="eventTitleHtml">Gran Jornada de<br/>Arborización 2026</span>
+              <span data-i18n-html="eventTitleHtml">Celebración del<br/>Día del Árbol 2026</span>
             </h2>
             <p class="event-desc" data-i18n="eventDescription">
-              Únete a nuestra jornada más grande del año. Plantaremos nuevos árboles nativos en cinco barrios de La Antigua, realizaremos talleres de mantenimiento y celebraremos juntos el patrimonio verde de nuestra ciudad. ¡Todos son bienvenidos!
+              Una actividad para inaugurar la nueva temporada de siembra con la plantación de un árbol cachimbo y cuatro arbustos.
             </p>
 
             <div class="event-meta" aria-label="Detalles del evento" data-i18n-attr="aria-label:eventMetaAria">
               <div class="event-meta-item">
                 <span class="event-meta-icon" aria-hidden="true">📅</span>
-                <span data-i18n="eventDateLong">Sábado, 14 de junio de 2026</span>
+                <span data-i18n="eventDateLong">Domingo, 14 de junio de 2026</span>
               </div>
               <div class="event-meta-item">
                 <span class="event-meta-icon" aria-hidden="true">📍</span>
-                <span data-i18n="eventLocation">Parque Central, La Antigua Guatemala</span>
+                <span data-i18n="eventLocation">Esquina de Amatista y Esmeralda, Residencial La Antigua</span>
               </div>
               <div class="event-meta-item">
                 <span class="event-meta-icon" aria-hidden="true">🕗</span>
-                <span data-i18n="eventTimeRange">7:00 a.m. - 5:00 p.m.</span>
+                <span data-i18n="eventTimeRange">10:00 a.m.- ~11:30</span>
               </div>
               <div class="event-meta-item">
                 <span class="event-meta-icon" aria-hidden="true">🎟️</span>
-                <span data-i18n="eventAdmission">Entrada libre</span>
+                <span data-i18n="eventAdmission">Todos los vecinos están invitados</span>
+              </div>
+              <div class="event-meta-item">
+                <span class="event-meta-icon" aria-hidden="true">☕</span>
+                <span data-i18n="eventRefreshment">Refrigerio a las 11:00 a.m.</span>
+              </div>
+              <div class="event-meta-item">
+                <span class="event-meta-icon" aria-hidden="true">🪴</span>
+                <span data-i18n="eventPlantExchange">Intercambio de plantas e insumos a las 11:00 a.m.</span>
               </div>
             </div>
 
-            <a href="#agenda" class="btn-primary" style="display:inline-block;" data-i18n="eventAgendaCta">Ver agenda completa ↓</a>
+            <div class="event-actions">
+              <a href="#agenda" class="btn-primary" style="display:inline-block;" data-i18n="eventAgendaCta">Ver agenda completa ↓</a>
+              <button
+                type="button"
+                class="btn-ghost"
+                data-modal="event-info"
+                data-i18n="eventInfoCta"
+                aria-label="Abrir brochure del evento"
+                data-i18n-attr="aria-label:eventInfoAria"
+              >
+                Ver brochure
+              </button>
+              <button
+                type="button"
+                class="btn-ghost"
+                data-modal="event-agenda"
+                data-i18n="eventAgendaImageCta"
+                aria-label="Abrir agenda visual del evento"
+                data-i18n-attr="aria-label:eventAgendaImageAria"
+              >
+                Ver agenda visual
+              </button>
+            </div>
           </div>
 
           <div class="event-date-block" aria-hidden="true">
@@ -366,7 +467,7 @@
           <div class="agenda-time">11:00<br/>a.m.</div>
           <div class="agenda-dot" aria-hidden="true"></div>
           <div class="agenda-body">
-            <span class="agenda-tag tag-field" data-i18n="agendaSpeaker7">Mariela F Cornelia M Vilma G Ana O Virginia A</span>
+            <span class="agenda-tag tag-field" data-i18n="agendaSpeaker7">Mariela F, Cornelia M, Vilma G, Ana O, Virginia A</span>
             <div class="agenda-body-title" data-i18n="agendaItem7Title">Refrigerio</div>
             <div class="agenda-body-detail" data-i18n="agendaItem7Detail">Distribución de alimentos y bebidas, junto con indicaciones sobre la disposición de residuos y compostables.</div>
           </div>
@@ -376,7 +477,7 @@
           <div class="agenda-time">11:00<br/>a.m.</div>
           <div class="agenda-dot" aria-hidden="true"></div>
           <div class="agenda-body">
-            <span class="agenda-tag tag-field" data-i18n="agendaSpeaker8">David Q Nora G Zaida C</span>
+            <span class="agenda-tag tag-field" data-i18n="agendaSpeaker8">David Q, Nora G, Zaida C</span>
             <div class="agenda-body-title" data-i18n="agendaItem8Title">Intercambio de plantas e insumos</div>
             <div class="agenda-body-detail" data-i18n="agendaItem8Detail">Dinámica para el intercambio de plantas entre vecinos.</div>
           </div>

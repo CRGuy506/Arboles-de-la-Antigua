@@ -3,32 +3,32 @@
 ## 1. Resource Group
 ```bash
 az group create \
-  --name rg-neighborhood-site \
+  --name ADLA-RG \
   --location eastus
 ```
 
 ## 2. VNET and Subnet
 ```bash
 az network vnet create \
-  --resource-group rg-neighborhood-site \
-  --name vnet-site \
+  --resource-group ADLA-RG \
+  --name ADLA-VNET \
   --address-prefix 10.0.0.0/16 \
-  --subnet-name subnet-web \
+  --subnet-name ADLA-SNET \
   --subnet-prefix 10.0.1.0/24
 ```
 
 ## 3. Network Security Group
 ```bash
 az network nsg create \
-  --resource-group rg-neighborhood-site \
-  --name nsg-site
+  --resource-group ADLA-RG \
+  --name ADLA-NSG
 ```
 
 ```bash
 az network nsg rule create \
-  --resource-group rg-neighborhood-site \
-  --nsg-name nsg-site \
-  --name allow-http-https \
+  --resource-group ADLA-RG \
+  --nsg-name ADLA-NSG \
+  --name ADLA-NSG-ALLOW-HTTP-HTTPS \
   --priority 100 \
   --destination-port-ranges 80 443 \
   --protocol Tcp \
@@ -37,9 +37,9 @@ az network nsg rule create \
 
 ```bash
 az network nsg rule create \
-  --resource-group rg-neighborhood-site \
-  --nsg-name nsg-site \
-  --name allow-ssh-temp \
+  --resource-group ADLA-RG \
+  --nsg-name ADLA-NSG \
+  --name ADLA-NSG-ALLOW-SSH-TEMP \
   --priority 110 \
   --destination-port-ranges 22 \
   --protocol Tcp \
@@ -49,8 +49,8 @@ az network nsg rule create \
 ## 4. Public IP
 ```bash
 az network public-ip create \
-  --resource-group rg-neighborhood-site \
-  --name pip-site \
+  --resource-group ADLA-RG \
+  --name ADLA-PIP \
   --sku Standard \
   --allocation-method Static
 ```
@@ -58,29 +58,29 @@ az network public-ip create \
 ## 5. NIC
 ```bash
 az network nic create \
-  --resource-group rg-neighborhood-site \
-  --name nic-site \
-  --vnet-name vnet-site \
-  --subnet subnet-web \
-  --network-security-group nsg-site \
-  --public-ip-address pip-site
+  --resource-group ADLA-RG \
+  --name ADLA-NIC \
+  --vnet-name ADLA-VNET \
+  --subnet ADLA-SNET \
+  --network-security-group ADLA-NSG \
+  --public-ip-address ADLA-PIP
 ```
 
 ## 6. VM
 ```bash
 az vm create \
-  --resource-group rg-neighborhood-site \
-  --name vm-site \
-  --nics nic-site \
+  --resource-group ADLA-RG \
+  --name ADLA-VM \
+  --nics ADLA-NIC \
   --image Ubuntu2204 \
   --size Standard_B1s \
-  --admin-username azureuser \
+  --admin-username Admin-ADLA \
   --generate-ssh-keys
 ```
 
 ## 7. SSH
 ```bash
-ssh azureuser@<PUBLIC_IP>
+ssh Admin-ADLA@<PUBLIC_IP>
 ```
 
 ## 8. OS Updates

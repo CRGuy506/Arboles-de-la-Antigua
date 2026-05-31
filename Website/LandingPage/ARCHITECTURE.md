@@ -8,7 +8,7 @@ Update it whenever structure, dependencies, runtime behavior, or tracking/privac
 ```mermaid
 graph TD
   A[small site.html] --> B[styles/main.css]
-  A --> C[translations.js]
+  A --> C[js/translations.js]
   A --> D[js/theme.js]
   A --> E[js/lang.js]
   A --> F[js/modal.js]
@@ -56,7 +56,7 @@ graph TD
 
 - `small site.html`: Main landing page (no analytics consent layer).
 - `small site + GA.html`: Landing page variant with GA4 + consent-mode + cookie consent UI.
-- `translations.js`: `window.ADLA_TRANSLATIONS` dictionaries (`es`, `en`, `fr`).
+- `js/translations.js`: `window.ADLA_TRANSLATIONS` dictionaries (`es`, `en`, `fr`).
 - `translations_backup_corrupted.js`: Historical backup, not loaded by either HTML entrypoint.
 - `styles/main.css`: Global visual system and responsive behavior.
 - `js/theme.js`: Theme persistence + toggle.
@@ -72,7 +72,7 @@ graph TD
 
 - `small site.html`
   - Loads the shared CSS and JS stack in this order:
-    1. `translations.js`
+    1. `js/translations.js`
     2. `js/theme.js`
     3. `js/lang.js`
     4. `js/modal.js`
@@ -86,7 +86,7 @@ graph TD
 
 ## Core Runtime Behavior
 
-1. `translations.js` defines `window.ADLA_TRANSLATIONS`.
+1. `js/translations.js` defines `window.ADLA_TRANSLATIONS`.
 2. `theme.js` resolves `adla-theme` from localStorage (or OS preference fallback) and writes `data-theme`.
 3. `lang.js` applies locale text/HTML/attribute translations and persists `adla-lang`.
 4. `modal.js` handles all `data-modal` triggers, builds modal DOM dynamically, and locks scroll safely.
@@ -100,7 +100,7 @@ graph TD
   - `data-photo-src`
   - `data-photo-title-key`
   - `data-photo-alt-key`
-- `modal.js` resolves localized title/alt from `translations.js` and opens an enlarged image modal.
+- `modal.js` resolves localized title/alt from `js/translations.js` and opens an enlarged image modal.
 - Current tile sources are external placeholder URLs (text-labeled placeholders).
 - About badge year is intentionally placeholder text: `XXXX`.
 

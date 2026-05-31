@@ -11,7 +11,7 @@ Monorepo-style workspace with two main projects:
   - `LandingPage/`
     - `small site.html`
     - `small site + GA.html`
-    - `translations.js`
+    - `js/translations.js`
     - `styles/main.css`
     - `js/`
     - `Support/`

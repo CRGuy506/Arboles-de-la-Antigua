@@ -12,7 +12,7 @@ Static multilingual landing page for the Arboles de la Antigua project.
 ## Tech Stack
 
 - HTML + CSS + vanilla JavaScript
-- i18n dictionaries in `translations.js`
+- i18n dictionaries in `js/translations.js`
 - Runtime modules in `js/`:
   - `theme.js`
   - `lang.js`
@@ -44,7 +44,7 @@ Example (if you use VS Code Live Server):
 
 ## Translation Model
 
-`translations.js` exposes `window.ADLA_TRANSLATIONS` with locales:
+`js/translations.js` exposes `window.ADLA_TRANSLATIONS` with locales:
 
 - `es`
 - `en`
@@ -87,4 +87,4 @@ When editing features:
 
 1. Keep `small site.html` and `small site + GA.html` aligned unless intentional.
 2. Update `ARCHITECTURE.md` for structural or runtime changes.
-3. If text is translated, update all three locales in `translations.js`.
+3. If text is translated, update all three locales in `js/translations.js`.

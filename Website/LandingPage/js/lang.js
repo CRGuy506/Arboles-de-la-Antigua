@@ -1,7 +1,7 @@
 /**
  * lang.js - Language selection and translation handler
  * 
- * Dependencies: translations.js (must load before this script)
+ * Dependencies: js/translations.js (must load before this script)
  * 
  * Features:
  *   - Persistent language preference (localStorage: 'adla-lang')

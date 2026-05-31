@@ -342,11 +342,28 @@ server {
     listen 80;
   server_name arbolesdelaantigua.org www.arbolesdelaantigua.org;
 
-    root /var/www/site;
+  # Drop .git probes and other hidden files used by scanners.
+  location = /.git {
+    return 444;
+  }
+
+  location ^~ /.git/ {
+    return 444;
+  }
+
+  location ~ /\.(?!well-known).* {
+    return 444;
+  }
+
+  location ~* /(wp-admin|wp-login\.php|xmlrpc\.php|\.env|composer\.(json|lock)|vendor/|\.svn|\.hg) {
+    return 444;
+  }
+
+  root /var/www/site/Website/LandingPage;
     index index.html;
 
     location / {
-        try_files $uri $uri/ =404;
+    try_files $uri $uri/ /index.html;
     }
 }
 ```

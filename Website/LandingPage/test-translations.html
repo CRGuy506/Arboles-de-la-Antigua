@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Translation Test</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        .test-result { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .pass { background: #d4edda; }
+        .fail { background: #f8d7da; }
+    </style>
+</head>
+<body>
+    <h1>Translation System Test</h1>
+    <div id="results"></div>
+
+    <script src="translations.js?v=20260529"></script>
+    <script>
+        const results = document.getElementById('results');
+        
+        function addResult(label, passed, details) {
+            const div = document.createElement('div');
+            div.className = `test-result ${passed ? 'pass' : 'fail'}`;
+            div.innerHTML = `<strong>${label}</strong>: ${passed ? '✓' : '✗'}<br>${details}`;
+            results.appendChild(div);
+        }
+        
+        // Test 1: Check if ADLA_TRANSLATIONS exists
+        addResult('ADLA_TRANSLATIONS exists', !!window.ADLA_TRANSLATIONS, 
+            `typeof window.ADLA_TRANSLATIONS = ${typeof window.ADLA_TRANSLATIONS}`);
+        
+        if (window.ADLA_TRANSLATIONS) {
+            // Test 2: Check locales exist
+            const hasES = !!window.ADLA_TRANSLATIONS.es;
+            const hasEN = !!window.ADLA_TRANSLATIONS.en;
+            const hasFR = !!window.ADLA_TRANSLATIONS.fr;
+            addResult('All locales exist', hasES && hasEN && hasFR, 
+                `ES: ${hasES}, EN: ${hasEN}, FR: ${hasFR}`);
+            
+            // Test 3: Check specific keys in each locale
+            const keysToCheck = ['aboutBody1', 'aboutBody3', 'beneficioTitle1', 'valueChip1'];
+            for (const key of keysToCheck) {
+                const esHas = !!window.ADLA_TRANSLATIONS.es[key];
+                const enHas = !!window.ADLA_TRANSLATIONS.en[key];
+                const frHas = !!window.ADLA_TRANSLATIONS.fr[key];
+                const allHave = esHas && enHas && frHas;
+                addResult(`Key: ${key}`, allHave,
+                    `ES: ${esHas}, EN: ${enHas}, FR: ${frHas}`);
+                
+                // Show content preview
+                if (allHave) {
+                    const preview = `ES: "${window.ADLA_TRANSLATIONS.es[key].substring(0, 40)}..."`;
+                    const enPreview = `EN: "${window.ADLA_TRANSLATIONS.en[key].substring(0, 40)}..."`;
+                    const frPreview = `FR: "${window.ADLA_TRANSLATIONS.fr[key].substring(0, 40)}..."`;
+                    document.getElementById('results').lastChild.innerHTML += `<br>${preview}<br>${enPreview}<br>${frPreview}`;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

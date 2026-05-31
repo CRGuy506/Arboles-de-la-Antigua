@@ -703,6 +703,13 @@ a { color: inherit; text-decoration: none; }
 
 .value-chip[data-modal] {
   cursor: pointer;
+  background: transparent;
+  border-color: color-mix(in srgb, var(--moss) 30%, transparent);
+}
+
+.value-chip[data-modal]:hover {
+  background: color-mix(in srgb, var(--moss) 8%, transparent);
+  border-color: color-mix(in srgb, var(--moss) 50%, transparent);
 }
 
 .value-chip[data-modal]:focus-visible {

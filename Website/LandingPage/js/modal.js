@@ -112,30 +112,46 @@ document.addEventListener('click', (e) => {
   if (trigger) {
     const modalId = trigger.getAttribute('data-modal');
 
-    if (modalId === 'impacto-demo') {
-      openModal({
-        title: 'Prueba de ventana emergente',
-        body: `
-          <p>Este es un texto de prueba aleatorio para validar el modal.</p>
-          <p>Los árboles urbanos no solo dan sombra: también reducen ruido, refrescan calles y mejoran la calidad del aire de forma medible.</p>
-          <img
-            src="https://picsum.photos/seed/arboles-antigua/720/420"
-            alt="Imagen aleatoria de prueba"
-            style="width:100%;border-radius:14px;margin-top:0.8rem;display:block;"
-          />
-        `
-      });
+    const modals = {
+      'beneficio-1': {
+        title: 'Reducción de temperatura',
+        body: `<p>Los árboles generan sombra directa sobre calles, aceras y edificios, reduciendo la temperatura superficial entre 10 y 20 °C. Este efecto disminuye el calor de isla urbana, reduce el consumo de energía por climatización y mejora significativamente el confort de quienes transitan y viven en el residencial, especialmente durante los meses más cálidos del año.</p>`
+      },
+      'beneficio-2': {
+        title: 'Valor paisajístico y comunitario',
+        body: `<p>Un arbolado bien mantenido embellece el entorno residencial, genera sentido de identidad y orgullo vecinal, y ha demostrado incrementar el valor percibido y real de las propiedades cercanas. Los espacios verdes activos también fomentan la convivencia y hacen del residencial un lugar más atractivo para vivir.</p>`
+      },
+      'beneficio-3': {
+        title: 'Hábitat para vida silvestre',
+        body: `<p>Los árboles y arbustos urbanos son refugio, fuente de alimento y corredores de tránsito para aves, polinizadores (abejas, mariposas) e insectos beneficiosos. Al ampliar y diversificar el arbolado del residencial, contribuimos directamente a la conectividad ecológica y a la conservación de la biodiversidad local.</p>`
+      },
+      'beneficio-4': {
+        title: 'Mitigación del cambio climático',
+        body: `<p>Cada árbol captura CO₂ de la atmósfera mediante la fotosíntesis y lo almacena en su biomasa durante décadas. Además, contribuye a la regulación del ciclo hídrico local y a la reducción de la escorrentía pluvial. Un arbolado denso puede secuestrar cientos de kilogramos de carbono a lo largo de su vida, aportando a los esfuerzos globales de mitigación climática desde el nivel comunitario.</p>`
+      },
+      'beneficio-5': {
+        title: 'Cohesión y organización vecinal',
+        body: `<p>Sembrar y mantener un arbolado de manera colectiva fortalece los lazos entre vecinos, desarrolla capacidades organizativas y genera redes de colaboración que pueden movilizarse para enfrentar otros retos importantes de la comunidad: seguridad, limpieza, mejoras de infraestructura y más. La iniciativa es un punto de encuentro y motor de organización vecinal.</p>`
+      },
+      'beneficio-6': {
+        title: 'Seguridad comunitaria',
+        body: `<p>Los espacios públicos bien mantenidos, con presencia de vegetación cuidada y actividad vecinal activa, desincentivan conductas antisociales y delictivas. Este principio, conocido como la <strong>Teoría de las Ventanas Rotas</strong>, sostiene que comunidades organizadas, limpias y vigiladas generan un entorno en el que el desorden —y con él el delito— tiene menos espacio para prosperar. Cuidar los árboles es, en ese sentido, también cuidar la seguridad del residencial.</p>`
+      }
+    };
+
+    if (modals[modalId]) {
+      openModal(modals[modalId]);
     }
   }
 });
 
-// Keyboard support for non-button modal triggers with data-modal.
+// Keyboard support: Enter and Space activate data-modal triggers (for role="button" divs).
 document.addEventListener('keydown', (e) => {
-  const trigger = e.target.closest('[data-modal]');
-  if (!trigger) return;
-
   if (e.key === 'Enter' || e.key === ' ') {
-    e.preventDefault();
-    trigger.click();
+    const trigger = e.target.closest('[data-modal]');
+    if (trigger) {
+      e.preventDefault();
+      trigger.click();
+    }
   }
 });

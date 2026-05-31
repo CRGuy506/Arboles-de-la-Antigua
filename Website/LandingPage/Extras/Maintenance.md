@@ -5,7 +5,8 @@ Use it together with Infra-doc.md.
 
 ## 0. Operating Rules
 
-- Keep SSH access JIT-only. Do not create permanent inbound NSG rules for port 22.
+- Maintain NSG IP whitelisting for SSH—verify source IPs are restricted to authorized admin machines.
+- Update NSG rules if admin IP changes (home/office network changes). Delete old rule, create new one with updated IP.
 - Record each maintenance execution date, owner, findings, and follow-up actions.
 - If a command returns unexpected output, stop and open an incident ticket before proceeding with risky changes.
 
@@ -129,17 +130,19 @@ Verify:
 - SSH hardening values are unchanged.
 - Sudoers permissions remain least-privilege.
 
-### 4.2 NSG and JIT policy review
+### 4.2 NSG IP whitelisting review
 
 ```bash
 # Run on local admin machine (Azure CLI)
 az network nsg rule list --resource-group ADLA-RG --nsg-name ADLA-NSG --output table
+az network nsg rule show --resource-group ADLA-RG --nsg-name ADLA-NSG --name ADLA-NSG-ALLOW-SSH --output json | jq '.sourceAddressPrefix'
 ```
 
 Verify:
 
-- No permanent inbound rule for SSH (22).
-- Only intended HTTP/HTTPS ingress rules are present.
+- NSG rule `ADLA-NSG-ALLOW-SSH` exists with source IP restricted to authorized admin machine(s).
+- HTTP/HTTPS rules (`ADLA-NSG-ALLOW-HTTP-HTTPS`) are present.
+- No other unexpected inbound rules exist.
 
 ### 4.3 Fail2Ban effectiveness spot-check
 

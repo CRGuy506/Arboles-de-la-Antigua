@@ -6,7 +6,7 @@ This runbook is for the ADLA VM stack using:
 - Certbot (TLS)
 - Fail2Ban (abuse protection)
 - SSH hardening
-- Azure networking resources (`ADLA-RG`, `ADLA-NSG`, `ADLA-PIP`, `ADLA-VM`)
+- Azure networking resources (`ADLA-RG`, `ADLA-NSG`, `ADLA-VM-PIP`, `ADLA-VM-NIC`, `ADLA-VM`)
 
 Use this in order during incidents: triage -> contain -> recover -> verify -> document.
 
@@ -245,7 +245,7 @@ az network nsg rule list \
 # Run on local machine OR Azure Cloud Shell
 az network public-ip show \
 	--resource-group ADLA-RG \
-	--name ADLA-PIP \
+	--name ADLA-VM-PIP \
 	--query ipAddress -o tsv
 ```
 

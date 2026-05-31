@@ -15,7 +15,7 @@ Cost-driven exclusions:
 
 Compensating controls:
 
-- JIT-only SSH access (no permanent inbound SSH rule)
+- NSG IP whitelisting for SSH (restrict to known admin IPs)
 - NSG public ingress limited to HTTP/HTTPS
 - NGINX hardening and TLS
 - Fail2Ban for SSH abuse control
@@ -84,7 +84,7 @@ az network nsg rule create \
   --access Allow
 ```
 
-No inbound SSH NSG rule is created. SSH is provided only through JIT windows.
+SSH access is controlled via NSG rule with IP whitelisting (configured in section 3).
 
 ### 2.4 Public IP
 
@@ -92,7 +92,7 @@ No inbound SSH NSG rule is created. SSH is provided only through JIT windows.
 # Run on local admin machine (Azure CLI)
 az network public-ip create \
   --resource-group ADLA-RG \
-  --name ADLA-PIP \
+  --name ADLA-VM-PIP \
   --sku Standard \
   --allocation-method Static
 ```
@@ -103,11 +103,11 @@ az network public-ip create \
 # Run on local admin machine (Azure CLI)
 az network nic create \
   --resource-group ADLA-RG \
-  --name ADLA-NIC \
+  --name ADLA-VM-NIC \
   --vnet-name ADLA-VNET \
   --subnet ADLA-SNET \
   --network-security-group ADLA-NSG \
-  --public-ip-address ADLA-PIP
+  --public-ip-address ADLA-VM-PIP
 ```
 
 ### 2.6 VM
@@ -117,21 +117,42 @@ az network nic create \
 az vm create \
   --resource-group ADLA-RG \
   --name ADLA-VM \
-  --nics ADLA-NIC \
-  --image Ubuntu2204 \
-  --size Standard_B1s \
+  --nics ADLA-VM-NIC \
+  --image Ubuntu2404 \
+  --size Standard_B4als_v2 \
   --admin-username Admin-ADLA \
   --generate-ssh-keys
 ```
 
-## 3. Enable JIT and Perform First Login
+## 3. Configure SSH Access and Perform First Login
 
-1. In Microsoft Defender for Cloud, enable JIT on ADLA-VM.
-2. Request temporary SSH access with source IP restriction and short duration (1-3 hours).
-3. Connect only after JIT approval:
+1. Identify your admin machine's public IP (used for whitelisting):
 
 ```bash
-# Run on local admin machine after JIT approval
+# Run on local admin machine
+curl -s https://ifconfig.me
+```
+
+2. Create NSG rule allowing SSH only from your IP:
+
+```bash
+# Run on local admin machine (Azure CLI)
+# Replace <YOUR_PUBLIC_IP> with the IP from step 1
+az network nsg rule create \
+  --resource-group ADLA-RG \
+  --nsg-name ADLA-NSG \
+  --name ADLA-NSG-ALLOW-SSH \
+  --priority 90 \
+  --source-address-prefixes <YOUR_PUBLIC_IP>/32 \
+  --destination-port-ranges 22 \
+  --protocol Tcp \
+  --access Allow
+```
+
+3. Connect via SSH:
+
+```bash
+# Run on local admin machine
 ssh Admin-ADLA@<PUBLIC_IP>
 ```
 
@@ -429,14 +450,28 @@ Required:
 - `VM_HOST`: Public IP or DNS of ADLA-VM
 - `VM_USER`: SSH username (example: Admin-ADLA)
 - `VM_SSH_KEY`: Private SSH key for deployment user
+- `VM_HOST_KEY`: host key from known_hosts for strict pinning
 - `DEPLOY_PATH`: `/var/www/site`
+- `HEALTHCHECK_URL`: Production HTTPS URL to validate after deploy (example: `https://yourdomain.com/`)
 
 Recommended:
 
-- `DEPLOY_BRANCH`: branch to deploy (default main)
-- `VM_HOST_KEY`: host key from known_hosts for pinning
+- Use GitHub Environment protection rules for production deploy approvals.
+
+This deployment workflow builds the site artifact in GitHub Actions and copies it to the VM over SSH.
+The VM does not need GitHub credentials or repository clone access.
+The workflow validates artifact SHA-256 checksums before extraction.
+If deployment or health checks fail, it restores the most recent pre-deploy backup archive automatically.
 
 ### 9.2 Allow least-privilege reload for deployments
+
+Set deploy path ownership so the deploy user can update files without sudo:
+
+```bash
+# Run on ADLA-VM
+sudo install -d -m 0755 /var/www/site
+sudo chown -R Admin-ADLA:Admin-ADLA /var/www/site
+```
 
 ```bash
 # Run on ADLA-VM
@@ -460,7 +495,14 @@ sudo -l -U Admin-ADLA
 
 1. Push workflow and website changes to main.
 2. Run workflow_dispatch (or push under Website/LandingPage).
-3. Confirm deploy job success.
+3. Confirm deploy job success and the post-deploy health check step passes.
+
+### 9.4 Rollback behavior
+
+- Before every deployment, workflow creates a backup archive of current site contents in `/tmp` on ADLA-VM when existing content is present.
+- Workflow retains the 3 most recent backup archives and automatically removes older backup files.
+- On failed deploy or failed health check, workflow automatically restores from the latest backup and runs a rollback health check.
+- Keep free space available in `/tmp` for backup archives and deployment artifacts.
 
 ## 10. First Deployment Verification and Closeout
 
@@ -481,8 +523,8 @@ curl -I https://yourdomain.com
 
 Closeout:
 
-1. End JIT session.
-2. Verify there is still no permanent inbound SSH NSG rule.
+1. Verify NSG rule `ADLA-NSG-ALLOW-SSH` is in place and restricted to your admin IP.
+2. Confirm HTTP/HTTPS rules (`ADLA-NSG-ALLOW-HTTP-HTTPS`) are present.
 
 ## 11. Post-Go-Live Operations Reference
 

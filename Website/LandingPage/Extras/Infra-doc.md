@@ -33,7 +33,7 @@ git --version
 ```
 
 2. Confirm you can deploy to the target Azure subscription.
-3. Have domain DNS access for `yourdomain.com` and `www.yourdomain.com`.
+3. Have domain DNS access for `arbolesdelaantigua.org` and `www.arbolesdelaantigua.org`.
 4. Have a GitHub repository ready with this workflow file present:
 
 ```text
@@ -153,7 +153,7 @@ az network nsg rule create \
 
 ```bash
 # Run on local admin machine
-ssh Admin-ADLA@<PUBLIC_IP>
+ssh -i <PATH_TO_PRIVATE_KEY> Admin-ADLA@<PUBLIC_IP>
 ```
 
 ## 4. Baseline OS Patching and Security Hardening
@@ -291,11 +291,13 @@ sudo systemctl enable fail2ban
 
 Create deployment path and clone repository:
 
+Repository link: https://github.com/CRGuy506/Arboles-de-la-Antigua/tree/main/Website/LandingPage
+
 ```bash
 # Run on ADLA-VM
 sudo mkdir -p /var/www/site
 sudo chown -R Admin-ADLA:Admin-ADLA /var/www/site
-git clone <REPO_SSH_URL> /var/www/site
+git clone https://github.com/CRGuy506/Arboles-de-la-Antigua.git /var/www/site
 ```
 
 ## 6. Install NGINX and Create HTTP Bootstrap Site
@@ -320,6 +322,7 @@ Add in `http` block:
 
 ```nginx
 server_tokens off;
+ssl_protocols TLSv1.2 TLSv1.3;
 limit_req_zone $binary_remote_addr zone=limit:10m rate=5r/s;
 client_max_body_size 10M;
 keepalive_timeout 15;
@@ -337,7 +340,7 @@ Set this temporary HTTP config first:
 ```nginx
 server {
     listen 80;
-    server_name yourdomain.com www.yourdomain.com;
+  server_name arbolesdelaantigua.org www.arbolesdelaantigua.org;
 
     root /var/www/site;
     index index.html;
@@ -365,7 +368,7 @@ Install certbot and issue certs:
 ```bash
 # Run on ADLA-VM
 sudo apt install certbot python3-certbot-nginx -y
-sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+sudo certbot --nginx -d arbolesdelaantigua.org -d www.arbolesdelaantigua.org
 ```
 
 ## 8. Replace with Final Hardened HTTPS Site Config
@@ -382,19 +385,19 @@ Use final configuration:
 ```nginx
 server {
     listen 80;
-    server_name yourdomain.com www.yourdomain.com;
+  server_name arbolesdelaantigua.org www.arbolesdelaantigua.org;
     return 301 https://$host$request_uri;
 }
 
 server {
     listen 443 ssl;
-    server_name yourdomain.com www.yourdomain.com;
+  server_name arbolesdelaantigua.org www.arbolesdelaantigua.org;
 
     root /var/www/site;
     index index.html;
 
-    ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/arbolesdelaantigua.org/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/arbolesdelaantigua.org/privkey.pem;
 
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers 'TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384';
@@ -448,11 +451,11 @@ In GitHub: Settings -> Secrets and variables -> Actions.
 Required:
 
 - `VM_HOST`: Public IP or DNS of ADLA-VM
-- `VM_USER`: SSH username (example: Admin-ADLA)
+- `VM_USER`: SSH username for dedicated deploy account (example: `gha-deploy`)
 - `VM_SSH_KEY`: Private SSH key for deployment user
 - `VM_HOST_KEY`: host key from known_hosts for strict pinning
 - `DEPLOY_PATH`: `/var/www/site`
-- `HEALTHCHECK_URL`: Production HTTPS URL to validate after deploy (example: `https://yourdomain.com/`)
+- `HEALTHCHECK_URL`: Production HTTPS URL to validate after deploy (example: `https://arbolesdelaantigua.org/`)
 
 Recommended:
 
@@ -463,32 +466,82 @@ The VM does not need GitHub credentials or repository clone access.
 The workflow validates artifact SHA-256 checksums before extraction.
 If deployment or health checks fail, it restores the most recent pre-deploy backup archive automatically.
 
-### 9.2 Allow least-privilege reload for deployments
+### 9.2 Create dedicated GitHub Actions deploy user (least privilege)
 
-Set deploy path ownership so the deploy user can update files without sudo:
+Create a non-admin account used only by CI/CD deployments:
+
+```bash
+# Run on ADLA-VM
+sudo adduser --disabled-password --gecos "" gha-deploy
+sudo passwd -l gha-deploy
+```
+
+Install a dedicated SSH key for this user (do not reuse admin keys):
+
+```bash
+# Run on ADLA-VM
+sudo install -d -m 700 -o gha-deploy -g gha-deploy /home/gha-deploy/.ssh
+sudo touch /home/gha-deploy/.ssh/authorized_keys
+sudo chown gha-deploy:gha-deploy /home/gha-deploy/.ssh/authorized_keys
+sudo chmod 600 /home/gha-deploy/.ssh/authorized_keys
+sudo nano /home/gha-deploy/.ssh/authorized_keys
+```
+
+Paste only the GitHub Actions deploy public key in `authorized_keys`.
+
+Grant access only to deployment content path:
 
 ```bash
 # Run on ADLA-VM
 sudo install -d -m 0755 /var/www/site
-sudo chown -R Admin-ADLA:Admin-ADLA /var/www/site
+sudo chown -R gha-deploy:gha-deploy /var/www/site
+sudo chmod -R u=rwX,go=rX /var/www/site
 ```
+
+Allow only NGINX config test and reload through sudo (no full sudo access):
 
 ```bash
 # Run on ADLA-VM
-sudo visudo -f /etc/sudoers.d/adla-deploy
+sudo visudo -f /etc/sudoers.d/gha-deploy
 ```
 
 Add:
 
 ```text
-Admin-ADLA ALL=(ALL) NOPASSWD:/usr/sbin/nginx,/bin/systemctl reload nginx
+gha-deploy ALL=(root) NOPASSWD:/usr/sbin/nginx -t,/bin/systemctl reload nginx
 ```
 
-Validate:
+Optional SSH hardening specific to deploy user:
 
 ```bash
 # Run on ADLA-VM
-sudo -l -U Admin-ADLA
+sudo nano /etc/ssh/sshd_config
+```
+
+Add:
+
+```text
+Match User gha-deploy
+  PasswordAuthentication no
+  PermitTTY no
+  X11Forwarding no
+  AllowTcpForwarding no
+  PermitTunnel no
+```
+
+Apply SSH config:
+
+```bash
+# Run on ADLA-VM
+sudo systemctl restart ssh
+```
+
+Validate effective permissions:
+
+```bash
+# Run on ADLA-VM
+sudo -l -U gha-deploy
+sudo -u gha-deploy test -w /var/www/site && echo "deploy path writable"
 ```
 
 ### 9.3 Run first workflow
@@ -518,7 +571,7 @@ Run from any client machine:
 
 ```bash
 # Run on local client machine
-curl -I https://yourdomain.com
+curl -I https://arbolesdelaantigua.org
 ```
 
 Closeout:

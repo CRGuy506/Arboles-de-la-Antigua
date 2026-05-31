@@ -1,0 +1,65 @@
+name: Deploy Landing Page
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - Website/LandingPage/**
+      - .github/workflows/deploy-site.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-landing-page
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      VM_HOST: ${{ secrets.VM_HOST }}
+      VM_USER: ${{ secrets.VM_USER }}
+      VM_SSH_KEY: ${{ secrets.VM_SSH_KEY }}
+      VM_HOST_KEY: ${{ secrets.VM_HOST_KEY }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+      DEPLOY_BRANCH: ${{ secrets.DEPLOY_BRANCH || 'main' }}
+
+    steps:
+      - name: Validate required secrets
+        run: |
+          set -euo pipefail
+          test -n "${VM_HOST}"
+          test -n "${VM_USER}"
+          test -n "${VM_SSH_KEY}"
+          test -n "${DEPLOY_PATH}"
+
+      - name: Configure SSH
+        run: |
+          set -euo pipefail
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "${VM_SSH_KEY}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+          if [ -n "${VM_HOST_KEY:-}" ]; then
+            printf '%s\n' "${VM_HOST_KEY}" >> ~/.ssh/known_hosts
+          else
+            ssh-keyscan -H "${VM_HOST}" >> ~/.ssh/known_hosts
+          fi
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Deploy to VM
+        run: |
+          set -euo pipefail
+          ssh -o BatchMode=yes "${VM_USER}@${VM_HOST}" "
+            set -euo pipefail
+            cd '${DEPLOY_PATH}'
+            git fetch --prune origin
+            git checkout '${DEPLOY_BRANCH}'
+            git reset --hard 'origin/${DEPLOY_BRANCH}'
+            sudo /usr/sbin/nginx -t
+            sudo /bin/systemctl reload nginx
+          "

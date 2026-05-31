@@ -11,6 +11,8 @@
  *   - i18n binding: data-i18n, data-i18n-html, data-i18n-attr
  */
 
+const translations = window.ADLA_TRANSLATIONS || {};
+
 /**
  * Applies translations to all elements in the page.
  * Supports three binding types:
@@ -21,7 +23,6 @@
  * @param {string} locale - The target locale (es, en, fr, etc.)
  */
 function applyTranslations(locale) {
-  const translations = window.ADLA_TRANSLATIONS || {};
   const fallback = translations.es || {};
   const selectedLocale = translations[locale] ? locale : (translations.es ? 'es' : Object.keys(translations)[0]);
   const dict = translations[selectedLocale] || fallback;
@@ -99,7 +100,6 @@ function openLanguageMenu() {
 
 // Initialize: restore saved language or default to Spanish
 const savedLanguage = localStorage.getItem('adla-lang') || 'es';
-const translations = window.ADLA_TRANSLATIONS || {};
 languageSelect.value = translations[savedLanguage] ? savedLanguage : (translations.es ? 'es' : 'en');
 applyTranslations(languageSelect.value);
 updateLanguageDropdownUI(languageSelect.value);

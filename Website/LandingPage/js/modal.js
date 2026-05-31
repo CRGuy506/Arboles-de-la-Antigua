@@ -19,50 +19,29 @@ let lockedScrollY = 0;
 
 function lockBodyScroll() {
   lockedScrollY = window.scrollY || window.pageYOffset || 0;
-  document.documentElement.style.overflow = 'hidden';
-  document.documentElement.style.scrollBehavior = 'auto';
+  document.body.classList.add('modal-open');
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${lockedScrollY}px`;
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+  document.body.style.width = '100%';
 }
 
 function unlockBodyScroll() {
-  document.documentElement.style.overflow = '';
-  document.documentElement.style.scrollBehavior = '';
+  document.body.classList.remove('modal-open');
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
+  document.body.style.width = '';
   window.scrollTo(0, lockedScrollY);
 }
 
 /**
  * Opens a modal with custom title and HTML content.
- * Supports both direct content (title/body) or translation keys (titleKey/bodyKey).
- * @param {Object} config - { title, body } or { titleKey, bodyKey } or mix
+ * @param {Object} config - { title: string, body: string (HTML) }
  */
 function openModal(config) {
-  // Resolve translations if keys are provided
-  let title = config.title || '';
-  let body = config.body || '';
-  
-  if (config.titleKey) {
-    try {
-      const locale = localStorage.getItem('adla-lang') || 'es';
-      const translations = (window.ADLA_TRANSLATIONS && window.ADLA_TRANSLATIONS[locale]) 
-        || (window.ADLA_TRANSLATIONS && window.ADLA_TRANSLATIONS['es']) 
-        || {};
-      title = translations[config.titleKey] || config.title || '';
-    } catch (e) {
-      title = config.title || '';
-    }
-  }
-  
-  if (config.bodyKey) {
-    try {
-      const locale = localStorage.getItem('adla-lang') || 'es';
-      const translations = (window.ADLA_TRANSLATIONS && window.ADLA_TRANSLATIONS[locale]) 
-        || (window.ADLA_TRANSLATIONS && window.ADLA_TRANSLATIONS['es']) 
-        || {};
-      body = translations[config.bodyKey] || config.body || '';
-    } catch (e) {
-      body = config.body || '';
-    }
-  }
-  
   // Create close button
   const closeBtn = document.createElement('button');
   closeBtn.type = 'button';
@@ -74,21 +53,21 @@ function openModal(config) {
   // Create header
   const header = document.createElement('div');
   header.className = 'modal-header';
-  const titleEl = document.createElement('h2');
-  titleEl.className = 'modal-title';
-  titleEl.textContent = title || '';
-  header.appendChild(titleEl);
+  const title = document.createElement('h2');
+  title.className = 'modal-title';
+  title.textContent = config.title || '';
+  header.appendChild(title);
 
   // Create body
-  const bodyEl = document.createElement('div');
-  bodyEl.className = 'modal-body';
-  bodyEl.innerHTML = body || '';
+  const body = document.createElement('div');
+  body.className = 'modal-body';
+  body.innerHTML = config.body || '';
 
   // Assemble and display modal
   modalContent.innerHTML = '';
   modalContent.appendChild(closeBtn);
   modalContent.appendChild(header);
-  modalContent.appendChild(bodyEl);
+  modalContent.appendChild(body);
 
   modalOverlay.classList.add('active');
   modalOverlay.setAttribute('aria-hidden', 'false');
@@ -133,28 +112,30 @@ document.addEventListener('click', (e) => {
   if (trigger) {
     const modalId = trigger.getAttribute('data-modal');
 
-    const modals = {
-      'beneficio-1': { titleKey: 'beneficioTitle1', bodyKey: 'beneficioBody1' },
-      'beneficio-2': { titleKey: 'beneficioTitle2', bodyKey: 'beneficioBody2' },
-      'beneficio-3': { titleKey: 'beneficioTitle3', bodyKey: 'beneficioBody3' },
-      'beneficio-4': { titleKey: 'beneficioTitle4', bodyKey: 'beneficioBody4' },
-      'beneficio-5': { titleKey: 'beneficioTitle5', bodyKey: 'beneficioBody5' },
-      'beneficio-6': { titleKey: 'beneficioTitle6', bodyKey: 'beneficioBody6' }
-    };
-
-    if (modals[modalId]) {
-      openModal(modals[modalId]);
+    if (modalId === 'impacto-demo') {
+      openModal({
+        title: 'Prueba de ventana emergente',
+        body: `
+          <p>Este es un texto de prueba aleatorio para validar el modal.</p>
+          <p>Los árboles urbanos no solo dan sombra: también reducen ruido, refrescan calles y mejoran la calidad del aire de forma medible.</p>
+          <img
+            src="https://picsum.photos/seed/arboles-antigua/720/420"
+            alt="Imagen aleatoria de prueba"
+            style="width:100%;border-radius:14px;margin-top:0.8rem;display:block;"
+          />
+        `
+      });
     }
   }
 });
 
-// Keyboard support: Enter and Space activate data-modal triggers (for role="button" divs).
+// Keyboard support for non-button modal triggers with data-modal.
 document.addEventListener('keydown', (e) => {
+  const trigger = e.target.closest('[data-modal]');
+  if (!trigger) return;
+
   if (e.key === 'Enter' || e.key === ' ') {
-    const trigger = e.target.closest('[data-modal]');
-    if (trigger) {
-      e.preventDefault();
-      trigger.click();
-    }
+    e.preventDefault();
+    trigger.click();
   }
 });

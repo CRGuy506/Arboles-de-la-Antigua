@@ -18,14 +18,10 @@ concurrency:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     environment: production
 
     env:
-      VM_HOST: ${{ secrets.VM_HOST }}
-      VM_USER: ${{ secrets.VM_USER }}
-      VM_SSH_KEY: ${{ secrets.VM_SSH_KEY }}
-      VM_HOST_KEY: ${{ secrets.VM_HOST_KEY }}
       DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
       HEALTHCHECK_URL: ${{ secrets.HEALTHCHECK_URL }}
 
@@ -36,20 +32,7 @@ jobs:
       - name: Validate required secrets
         run: |
           set -euo pipefail
-          test -n "${VM_HOST}"
-          test -n "${VM_USER}"
-          test -n "${VM_SSH_KEY}"
-          test -n "${VM_HOST_KEY}"
           test -n "${DEPLOY_PATH}"
-
-      - name: Configure SSH
-        run: |
-          set -euo pipefail
-          install -m 700 -d ~/.ssh
-          printf '%s\n' "${VM_SSH_KEY}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          printf '%s\n' "${VM_HOST_KEY}" > ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
 
       - name: Build deploy artifact
         run: |
@@ -63,57 +46,49 @@ jobs:
           tar -C /tmp/landing-site -czf /tmp/landing-site.tgz .
           sha256sum /tmp/landing-site.tgz | awk '{print $1}' > /tmp/landing-site.tgz.sha256
 
-      - name: Upload artifact to VM
-        run: |
-          set -euo pipefail
-          scp -o BatchMode=yes /tmp/landing-site.tgz "${VM_USER}@${VM_HOST}:/tmp/landing-site.tgz"
-          scp -o BatchMode=yes /tmp/landing-site.tgz.sha256 "${VM_USER}@${VM_HOST}:/tmp/landing-site.tgz.sha256"
-
-      - name: Deploy to VM
+      - name: Deploy locally on self-hosted runner
         id: deploy
         run: |
           set -euo pipefail
-          ssh -o BatchMode=yes "${VM_USER}@${VM_HOST}" "
-            set -euo pipefail
-            case '${DEPLOY_PATH}' in
-              ''|/|/var|/etc|/usr|/bin|/sbin|/home)
-                echo 'Refusing unsafe DEPLOY_PATH'
-                exit 1
-                ;;
-            esac
 
-            if [ -s /tmp/landing-site.tgz.sha256 ]; then
-              expected_checksum=\"\$(cat /tmp/landing-site.tgz.sha256)\"
-              actual_checksum=\"\$(sha256sum /tmp/landing-site.tgz | awk '{print \$1}')\"
-              if [ \"\${expected_checksum}\" != \"\${actual_checksum}\" ]; then
-                echo 'Artifact checksum validation failed'
-                exit 1
-              fi
-            else
-              echo 'Missing checksum file'
+          case "${DEPLOY_PATH}" in
+            ''|/|/var|/etc|/usr|/bin|/sbin|/home)
+              echo 'Refusing unsafe DEPLOY_PATH'
+              exit 1
+              ;;
+          esac
+
+          if [ -s /tmp/landing-site.tgz.sha256 ]; then
+            expected_checksum="$(cat /tmp/landing-site.tgz.sha256)"
+            actual_checksum="$(sha256sum /tmp/landing-site.tgz | awk '{print $1}')"
+            if [ "${expected_checksum}" != "${actual_checksum}" ]; then
+              echo 'Artifact checksum validation failed'
               exit 1
             fi
+          else
+            echo 'Missing checksum file'
+            exit 1
+          fi
 
-            backup_file='none'
-            if [ -d '${DEPLOY_PATH}' ] && find '${DEPLOY_PATH}' -mindepth 1 -print -quit | grep -q .; then
-              backup_file=\"/tmp/landing-site-backup-\$(date +%Y%m%d%H%M%S).tgz\"
-              /usr/bin/tar -C '${DEPLOY_PATH}' -czf \"\${backup_file}\" .
-              ls -1t /tmp/landing-site-backup-*.tgz 2>/dev/null | tail -n +4 | xargs -r rm -f
-            fi
-            printf '%s\n' \"\${backup_file}\" > /tmp/landing-site-last-backup-path.txt
+          backup_file='none'
+          if [ -d "${DEPLOY_PATH}" ] && find "${DEPLOY_PATH}" -mindepth 1 -print -quit | grep -q .; then
+            backup_file="/tmp/landing-site-backup-$(date +%Y%m%d%H%M%S).tgz"
+            sudo /usr/bin/tar -C "${DEPLOY_PATH}" -czf "${backup_file}" .
+            ls -1t /tmp/landing-site-backup-*.tgz 2>/dev/null | tail -n +4 | xargs -r rm -f
+          fi
+          printf '%s\n' "${backup_file}" > /tmp/landing-site-last-backup-path.txt
 
-            /usr/bin/install -d -m 0755 '${DEPLOY_PATH}'
-            /usr/bin/find '${DEPLOY_PATH}' -mindepth 1 -maxdepth 1 -exec rm -rf {} +
-            /usr/bin/tar -xzf /tmp/landing-site.tgz -C '${DEPLOY_PATH}'
-            rm -f /tmp/landing-site.tgz /tmp/landing-site.tgz.sha256
-            sudo /usr/sbin/nginx -t
-            sudo /bin/systemctl reload nginx
-          "
+          sudo /usr/bin/install -d -m 0755 "${DEPLOY_PATH}"
+          sudo /usr/bin/find "${DEPLOY_PATH}" -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+          sudo /usr/bin/tar -xzf /tmp/landing-site.tgz -C "${DEPLOY_PATH}"
+          rm -f /tmp/landing-site.tgz /tmp/landing-site.tgz.sha256
+          sudo /usr/sbin/nginx -t
+          sudo /bin/systemctl reload nginx
 
       - name: Post-deploy health check
         run: |
           set -euo pipefail
-          target_url="${HEALTHCHECK_URL:-https://${VM_HOST}}"
+          target_url="${HEALTHCHECK_URL:-https://127.0.0.1}"
           echo "Running health check against ${target_url}"
           curl --fail --show-error --silent --location --retry 4 --retry-delay 3 --max-time 20 "${target_url}" >/dev/null
 
@@ -122,29 +97,27 @@ jobs:
         if: ${{ failure() }}
         run: |
           set -euo pipefail
-          ssh -o BatchMode=yes "${VM_USER}@${VM_HOST}" "
-            set -euo pipefail
-            backup_file=\"none\"
-            if [ -f /tmp/landing-site-last-backup-path.txt ]; then
-              backup_file=\"\$(cat /tmp/landing-site-last-backup-path.txt)\"
-            fi
 
-            if [ \"\${backup_file}\" = 'none' ] || [ ! -f \"\${backup_file}\" ]; then
-              echo 'No backup artifact found; skipping rollback'
-              exit 0
-            fi
+          backup_file="none"
+          if [ -f /tmp/landing-site-last-backup-path.txt ]; then
+            backup_file="$(cat /tmp/landing-site-last-backup-path.txt)"
+          fi
 
-            /usr/bin/install -d -m 0755 '${DEPLOY_PATH}'
-            /usr/bin/find '${DEPLOY_PATH}' -mindepth 1 -maxdepth 1 -exec rm -rf {} +
-            /usr/bin/tar -xzf \"\${backup_file}\" -C '${DEPLOY_PATH}'
-            sudo /usr/sbin/nginx -t
-            sudo /bin/systemctl reload nginx
-          "
+          if [ "${backup_file}" = 'none' ] || [ ! -f "${backup_file}" ]; then
+            echo 'No backup artifact found; skipping rollback'
+            exit 0
+          fi
+
+          sudo /usr/bin/install -d -m 0755 "${DEPLOY_PATH}"
+          sudo /usr/bin/find "${DEPLOY_PATH}" -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+          sudo /usr/bin/tar -xzf "${backup_file}" -C "${DEPLOY_PATH}"
+          sudo /usr/sbin/nginx -t
+          sudo /bin/systemctl reload nginx
 
       - name: Health check after rollback
         if: ${{ failure() && steps.rollback.outcome == 'success' }}
         run: |
           set -euo pipefail
-          target_url="${HEALTHCHECK_URL:-https://${VM_HOST}}"
+          target_url="${HEALTHCHECK_URL:-https://127.0.0.1}"
           echo "Running rollback health check against ${target_url}"
           curl --fail --show-error --silent --location --retry 4 --retry-delay 3 --max-time 20 "${target_url}" >/dev/null

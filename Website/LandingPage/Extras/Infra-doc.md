@@ -36,110 +36,118 @@ git --version
 3. Have domain DNS access for `arbolesdelaantigua.org` and `www.arbolesdelaantigua.org`.
 4. Have a GitHub repository ready with this workflow file present:
 
-```text
-.github/workflows/deploy-site.yml
-```
-
 ## 2. Provision Azure Infrastructure
 
 ### 2.1 Resource Group
 
 ```bash
 # Run on local admin machine (Azure CLI)
-az group create \
-  --name ADLA-RG \
+This deployment workflow runs on a self-hosted GitHub Actions runner installed on ADLA-VM.
+The runner checks out the repository locally, builds the site artifact, validates its SHA-256 checksum, and deploys directly to the local web root.
+This design preserves the NSG model in section 3 because SSH remains restricted to known admin IPs only.
+GitHub-hosted runners do not need inbound SSH access to the VM.
   --location eastus
 ```
 
-### 2.2 VNET and Subnet
+### 9.2 Register a self-hosted GitHub Actions runner on ADLA-VM
 
-```bash
+In GitHub:
+
+1. Open repository Settings -> Actions -> Runners.
+2. Select New self-hosted runner.
+3. Choose Linux and X64.
+4. Copy the registration commands GitHub provides.
+
+Run the provided commands on ADLA-VM in a dedicated runner directory, for example:
 # Run on local admin machine (Azure CLI)
 az network vnet create \
   --resource-group ADLA-RG \
-  --name ADLA-VNET \
-  --address-prefix 10.0.0.0/16 \
+mkdir -p ~/actions-runner && cd ~/actions-runner
+# Paste and run the commands shown by GitHub for Linux X64 runner setup
   --subnet-name ADLA-SNET \
   --subnet-prefix 10.0.1.0/24
-```
+Install the runner service so it starts automatically after reboot:
 
 ### 2.3 Network Security Group
 
-```bash
-# Run on local admin machine (Azure CLI)
-az network nsg create \
-  --resource-group ADLA-RG \
-  --name ADLA-NSG
+cd ~/actions-runner
+sudo ./svc.sh install
+sudo ./svc.sh start
 ```
 
-```bash
+Validate that the runner shows as online in the GitHub repository settings before continuing.
 # Run on local admin machine (Azure CLI)
-az network nsg rule create \
+### 9.3 Grant the runner least-privilege deployment access
+
+Create the deployment path if it does not already exist:
   --resource-group ADLA-RG \
   --nsg-name ADLA-NSG \
   --name ADLA-NSG-ALLOW-HTTP-HTTPS \
   --priority 100 \
-  --destination-port-ranges 80 443 \
-  --protocol Tcp \
   --access Allow
 ```
+Identify the runner service account:
 
+```bash
+# Run on ADLA-VM
+ps aux | grep Runner.Listener
+```
+
+Allow only the commands required by the workflow through sudo. Replace `<RUNNER_USER>` with the actual runner account name:
 SSH access is controlled via NSG rule with IP whitelisting (configured in section 3).
 
 ### 2.4 Public IP
-
+sudo visudo -f /etc/sudoers.d/github-actions-deploy
 ```bash
 # Run on local admin machine (Azure CLI)
 az network public-ip create \
   --resource-group ADLA-RG \
   --name ADLA-VM-PIP \
-  --sku Standard \
+<RUNNER_USER> ALL=(root) NOPASSWD: /usr/bin/tar, /usr/bin/install, /usr/bin/find, /usr/sbin/nginx, /bin/systemctl
   --allocation-method Static
 ```
-
+Apply secure sudoers permissions:
 ### 2.5 NIC
 
 ```bash
-# Run on local admin machine (Azure CLI)
+sudo chmod 440 /etc/sudoers.d/github-actions-deploy
 az network nic create \
   --resource-group ADLA-RG \
-  --name ADLA-VM-NIC \
+Validate effective permissions:
   --vnet-name ADLA-VNET \
-  --subnet ADLA-SNET \
-  --network-security-group ADLA-NSG \
-  --public-ip-address ADLA-VM-PIP
-```
-
-### 2.6 VM
-
+```bash
+# Run on ADLA-VM
+sudo -l -U <RUNNER_USER>
+sudo -u <RUNNER_USER> test -r /var/www/site && echo "deploy path reachable"
 ```bash
 # Run on local admin machine (Azure CLI)
-az vm create \
+If command paths differ on your VM, confirm them before saving sudoers:
   --resource-group ADLA-RG \
   --name ADLA-VM \
   --nics ADLA-VM-NIC \
-  --image Ubuntu2404 \
+which tar install find nginx systemctl
   --size Standard_B4als_v2 \
   --admin-username Admin-ADLA \
-  --generate-ssh-keys
-```
+### 9.4 Run first workflow
 
-## 3. Configure SSH Access and Perform First Login
+1. Push workflow and website changes to main.
+2. In GitHub Actions, run `Deploy Landing Page` with `workflow_dispatch` or push changes under `Website/LandingPage`.
+3. Confirm the job is picked up by the self-hosted runner instead of remaining queued.
+4. Confirm deploy job success and the post-deploy health check step passes.
 
-1. Identify your admin machine's public IP (used for whitelisting):
+### 9.5 Rollback behavior
 
-```bash
-# Run on local admin machine
-curl -s https://ifconfig.me
-```
+- Before every deployment, workflow creates a backup archive of current site contents in `/tmp` on ADLA-VM when existing content is present.
+- Workflow retains the 3 most recent backup archives and automatically removes older backup files.
+- On failed deploy or failed health check, workflow automatically restores from the latest backup and runs a rollback health check.
+- Keep free space available in `/tmp` for backup archives and deployment artifacts.
 
-2. Create NSG rule allowing SSH only from your IP:
+### 9.6 Notes on network security model
 
-```bash
-# Run on local admin machine (Azure CLI)
-# Replace <YOUR_PUBLIC_IP> with the IP from step 1
-az network nsg rule create \
-  --resource-group ADLA-RG \
+- Keep NSG SSH access restricted to known admin IPs as defined in section 3.
+- Do not open SSH to GitHub-hosted runner IP ranges for this deployment model.
+- The self-hosted runner uses outbound HTTPS to GitHub and does not require inbound GitHub access to port 22.
+
   --nsg-name ADLA-NSG \
   --name ADLA-NSG-ALLOW-SSH \
   --priority 90 \
@@ -467,7 +475,7 @@ In GitHub: Settings -> Secrets and variables -> Actions.
 
 Required:
 
-- `VM_HOST`: Public IP or DNS of ADLA-VM
+scm-history-item:c%3A%5CUsers%5Csglockacuna%5CDocuments%5CProjects%5CAdlA?%7B%22repositoryId%22%3A%22scm0%22%2C%22historyItemId%22%3A%223d9a8af920e16ae803384854294f355a2311e4d0%22%2C%22historyItemParentId%22%3A%22a9b34333fbf205e7cb326f81401ae8ad03d613ac%22%2C%22historyItemDisplayId%22%3A%223d9a8af%22%7D- `VM_HOST`: Public IP or DNS of ADLA-VM
 - `VM_USER`: SSH username for dedicated deploy account (example: `gha-deploy`)
 - `VM_SSH_KEY`: Private SSH key for deployment user
 - `VM_HOST_KEY`: host key from known_hosts for strict pinning

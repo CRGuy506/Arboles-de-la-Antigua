@@ -41,6 +41,18 @@ jobs:
             exit 1
           fi
 
+      - name: Validate first-run bootstrap prerequisite
+        run: |
+          set -euo pipefail
+          if [ -d "${DEPLOY_PATH}" ] && find "${DEPLOY_PATH}" -mindepth 1 -print -quit | grep -q .; then
+            exit 0
+          fi
+
+          echo "${DEPLOY_PATH} is empty. The first production deployment requires a one-time manual bootstrap from the private repository before the health check can pass."
+          echo "Run this on ADLA-VM, then rerun the workflow:"
+          echo "export GIT_SSH_COMMAND='ssh -i ~/.ssh/adla_deploy_key -o IdentitiesOnly=yes'; rm -rf /tmp/adla-repo; git clone --depth 1 --filter=blob:none --sparse git@github.com:CRGuy506/Arboles-de-la-Antigua.git /tmp/adla-repo; cd /tmp/adla-repo; git sparse-checkout set Website/LandingPage; sudo rsync -a --delete Website/LandingPage/ /var/www/site/; cd /; rm -rf /tmp/adla-repo"
+          exit 1
+
       - name: Build deploy artifact
         run: |
           set -euo pipefail

@@ -11,7 +11,99 @@
 
 const mainNav = document.getElementById('mainNav');
 const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+const landingAudio = document.getElementById('landingAudio');
+const landingAudioFallbackToggle = document.getElementById('landingAudioFallbackToggle');
 const prefersReducedMotionApp = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const landingAudioDelayMs = 1200;
+const landingAudioSessionKey = 'adla-landing-audio-played';
+let landingAudioUnlockListenersBound = false;
+
+function markLandingAudioPlayed() {
+  try {
+    sessionStorage.setItem(landingAudioSessionKey, 'true');
+  } catch (error) {
+    // Ignore storage access failures in hardened/private browsing contexts.
+  }
+}
+
+function hasPlayedLandingAudio() {
+  try {
+    return sessionStorage.getItem(landingAudioSessionKey) === 'true';
+  } catch (error) {
+    return false;
+  }
+}
+
+function removeLandingAudioUnlockListeners() {
+  if (!landingAudioUnlockListenersBound) {
+    return;
+  }
+
+  ['pointerdown', 'keydown', 'touchstart'].forEach((eventName) => {
+    document.removeEventListener(eventName, tryPlayLandingAudioOnInteraction);
+  });
+  landingAudioUnlockListenersBound = false;
+}
+
+function showLandingAudioFallbackToggle() {
+  if (landingAudioFallbackToggle) {
+    landingAudioFallbackToggle.hidden = false;
+  }
+}
+
+function hideLandingAudioFallbackToggle() {
+  if (landingAudioFallbackToggle) {
+    landingAudioFallbackToggle.hidden = true;
+  }
+}
+
+function ensureLandingAudioUnlockListeners() {
+  if (landingAudioUnlockListenersBound) {
+    return;
+  }
+
+  ['pointerdown', 'keydown', 'touchstart'].forEach((eventName) => {
+    document.addEventListener(eventName, tryPlayLandingAudioOnInteraction, { once: true });
+  });
+  landingAudioUnlockListenersBound = true;
+}
+
+function tryPlayLandingAudio() {
+  if (!landingAudio || hasPlayedLandingAudio()) {
+    hideLandingAudioFallbackToggle();
+    return;
+  }
+
+  landingAudio.currentTime = 0;
+  const playAttempt = landingAudio.play();
+
+  if (playAttempt && typeof playAttempt.then === 'function') {
+    playAttempt
+      .then(() => {
+        markLandingAudioPlayed();
+        hideLandingAudioFallbackToggle();
+        removeLandingAudioUnlockListeners();
+      })
+      .catch(() => {
+        showLandingAudioFallbackToggle();
+        ensureLandingAudioUnlockListeners();
+      });
+    return;
+  }
+
+  markLandingAudioPlayed();
+  hideLandingAudioFallbackToggle();
+}
+
+function tryPlayLandingAudioOnInteraction() {
+  tryPlayLandingAudio();
+}
+
+if (landingAudioFallbackToggle) {
+  landingAudioFallbackToggle.addEventListener('click', () => {
+    tryPlayLandingAudio();
+  });
+}
 
 function closeMobileMenu() {
   if (!mainNav || !mobileMenuToggle) return;
@@ -119,3 +211,14 @@ if (isCoarsePointer && statBoxesWithDetail.length) {
     }
   });
 }
+
+window.addEventListener('load', () => {
+  if (!landingAudio || hasPlayedLandingAudio()) {
+    hideLandingAudioFallbackToggle();
+    return;
+  }
+
+  window.setTimeout(() => {
+    tryPlayLandingAudio();
+  }, landingAudioDelayMs);
+});

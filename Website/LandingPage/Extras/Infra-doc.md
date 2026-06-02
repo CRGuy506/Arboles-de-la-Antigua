@@ -543,6 +543,12 @@ This model does not require VM SSH host/user/key secrets for deployment.
 The workflow validates artifact SHA-256 checksums before extraction.
 If deployment or health checks fail, it restores the most recent pre-deploy backup archive automatically.
 
+Important first-run prerequisite:
+
+- Before the first successful production workflow run, `/var/www/site` must already contain the LandingPage content.
+- If `DEPLOY_PATH` is empty, the workflow now stops early and instructs you to run the one-time manual private-repo bootstrap from section `5.1`.
+- This is required because production validation expects the site to already be serveable during the initial bootstrap phase.
+
 ### 9.4 Verify runner scope before production changes
 
 Before merging workflow edits, confirm deployment scope remains limited to LandingPage:
@@ -636,6 +642,8 @@ sudo ./svc.sh start
 Validate that the runner shows as online in GitHub before continuing.
 
 ### 9.4 Run first workflow
+
+If this is the first production deployment on a new VM and `/var/www/site` is still empty, run the section `5.1` manual private-repo bootstrap first.
 
 1. Push workflow and website changes to main.
 2. Run workflow_dispatch (or push under Website/LandingPage).

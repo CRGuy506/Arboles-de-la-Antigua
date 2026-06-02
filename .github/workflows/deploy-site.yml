@@ -103,7 +103,8 @@ jobs:
           target_url="${HEALTHCHECK_URL}"
           echo "Running health check against ${target_url}"
           curl --fail --show-error --silent --location --retry 4 --retry-delay 3 --max-time 20 \
-            --user-agent "ADLA-Healthcheck/1.0" "${target_url}" >/dev/null
+            --user-agent 'Mozilla/5.0 (compatible; GitHubActionsHealthCheck/1.0)' \
+            "${target_url}" >/dev/null
 
       - name: Roll back on failure
         id: rollback
@@ -134,4 +135,5 @@ jobs:
           target_url="${HEALTHCHECK_URL}"
           echo "Running rollback health check against ${target_url}"
           curl --fail --show-error --silent --location --retry 4 --retry-delay 3 --max-time 20 \
-            --user-agent "ADLA-Healthcheck/1.0" "${target_url}" >/dev/null
+            --user-agent 'Mozilla/5.0 (compatible; GitHubActionsHealthCheck/1.0)' \
+            "${target_url}" >/dev/null

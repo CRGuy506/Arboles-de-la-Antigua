@@ -34,7 +34,8 @@ git --version
 
 2. Confirm you can deploy to the target Azure subscription.
 3. Have domain DNS access for `arbolesdelaantigua.org` and `www.arbolesdelaantigua.org`.
-4. Have a GitHub repository ready with this workflow file present:
+4. Have a GitHub repository ready with `.github/workflows/deploy-site.yml` present.
+5. Know your current public admin IP for SSH whitelisting (`<YOUR_PUBLIC_IP>`).
 
 ## 2. Provision Azure Infrastructure
 
@@ -42,122 +43,122 @@ git --version
 
 ```bash
 # Run on local admin machine (Azure CLI)
-This deployment workflow runs on a self-hosted GitHub Actions runner installed on ADLA-VM.
-The runner checks out the repository locally, builds the site artifact, validates its SHA-256 checksum, and deploys directly to the local web root.
-This design preserves the NSG model in section 3 because SSH remains restricted to known admin IPs only.
-GitHub-hosted runners do not need inbound SSH access to the VM.
+az group create \
+  --name ADLA-RG \
   --location eastus
 ```
 
-### 9.2 Register a self-hosted GitHub Actions runner on ADLA-VM
+### 2.2 Virtual Network and Subnet
 
-In GitHub:
-
-1. Open repository Settings -> Actions -> Runners.
-2. Select New self-hosted runner.
-3. Choose Linux and X64.
-4. Copy the registration commands GitHub provides.
-
-Run the provided commands on ADLA-VM in a dedicated runner directory, for example:
+```bash
 # Run on local admin machine (Azure CLI)
 az network vnet create \
   --resource-group ADLA-RG \
-mkdir -p ~/actions-runner && cd ~/actions-runner
-# Paste and run the commands shown by GitHub for Linux X64 runner setup
+  --name ADLA-VNET \
+  --address-prefix 10.0.0.0/16 \
   --subnet-name ADLA-SNET \
   --subnet-prefix 10.0.1.0/24
-Install the runner service so it starts automatically after reboot:
-
-### 2.3 Network Security Group
-
-cd ~/actions-runner
-sudo ./svc.sh install
-sudo ./svc.sh start
 ```
 
-Validate that the runner shows as online in the GitHub repository settings before continuing.
-# Run on local admin machine (Azure CLI)
-### 9.3 Grant the runner least-privilege deployment access
+### 2.3 Network Security Group and Inbound Rules
 
-Create the deployment path if it does not already exist:
+Create NSG:
+
+```bash
+# Run on local admin machine (Azure CLI)
+az network nsg create \
+  --resource-group ADLA-RG \
+  --name ADLA-NSG
+```
+
+Allow HTTP/HTTPS:
+
+```bash
+# Run on local admin machine (Azure CLI)
+az network nsg rule create \
   --resource-group ADLA-RG \
   --nsg-name ADLA-NSG \
   --name ADLA-NSG-ALLOW-HTTP-HTTPS \
   --priority 100 \
-  --access Allow
+  --direction Inbound \
+  --access Allow \
+  --protocol Tcp \
+  --source-address-prefixes '*' \
+  --source-port-ranges '*' \
+  --destination-address-prefixes '*' \
+  --destination-port-ranges 80 443
 ```
-Identify the runner service account:
+
+Allow SSH only from admin public IP:
 
 ```bash
-# Run on ADLA-VM
-ps aux | grep Runner.Listener
+# Run on local admin machine (Azure CLI)
+az network nsg rule create \
+  --resource-group ADLA-RG \
+  --nsg-name ADLA-NSG \
+  --name ADLA-NSG-ALLOW-SSH \
+  --priority 90 \
+  --direction Inbound \
+  --access Allow \
+  --protocol Tcp \
+  --source-address-prefixes <YOUR_PUBLIC_IP>/32 \
+  --source-port-ranges '*' \
+  --destination-address-prefixes '*' \
+  --destination-port-ranges 22
 ```
 
-Allow only the commands required by the workflow through sudo. Replace `<RUNNER_USER>` with the actual runner account name:
-SSH access is controlled via NSG rule with IP whitelisting (configured in section 3).
-
 ### 2.4 Public IP
-sudo visudo -f /etc/sudoers.d/github-actions-deploy
+
 ```bash
 # Run on local admin machine (Azure CLI)
 az network public-ip create \
   --resource-group ADLA-RG \
   --name ADLA-VM-PIP \
-<RUNNER_USER> ALL=(root) NOPASSWD: /usr/bin/tar, /usr/bin/install, /usr/bin/find, /usr/sbin/nginx, /bin/systemctl
+  --sku Standard \
   --allocation-method Static
 ```
-Apply secure sudoers permissions:
+
 ### 2.5 NIC
 
 ```bash
-sudo chmod 440 /etc/sudoers.d/github-actions-deploy
+# Run on local admin machine (Azure CLI)
 az network nic create \
   --resource-group ADLA-RG \
-Validate effective permissions:
+  --name ADLA-VM-NIC \
   --vnet-name ADLA-VNET \
-```bash
-# Run on ADLA-VM
-sudo -l -U <RUNNER_USER>
-sudo -u <RUNNER_USER> test -r /var/www/site && echo "deploy path reachable"
+  --subnet ADLA-SNET \
+  --network-security-group ADLA-NSG \
+  --public-ip-address ADLA-VM-PIP
+```
+
+### 2.6 Virtual Machine
+
 ```bash
 # Run on local admin machine (Azure CLI)
-If command paths differ on your VM, confirm them before saving sudoers:
+az vm create \
   --resource-group ADLA-RG \
   --name ADLA-VM \
   --nics ADLA-VM-NIC \
-which tar install find nginx systemctl
+  --image Ubuntu2204 \
   --size Standard_B4als_v2 \
   --admin-username Admin-ADLA \
-### 9.4 Run first workflow
-
-1. Push workflow and website changes to main.
-2. In GitHub Actions, run `Deploy Landing Page` with `workflow_dispatch` or push changes under `Website/LandingPage`.
-3. Confirm the job is picked up by the self-hosted runner instead of remaining queued.
-4. Confirm deploy job success and the post-deploy health check step passes.
-
-### 9.5 Rollback behavior
-
-- Before every deployment, workflow creates a backup archive of current site contents in `/tmp` on ADLA-VM when existing content is present.
-- Workflow retains the 3 most recent backup archives and automatically removes older backup files.
-- On failed deploy or failed health check, workflow automatically restores from the latest backup and runs a rollback health check.
-- Keep free space available in `/tmp` for backup archives and deployment artifacts.
-
-### 9.6 Notes on network security model
-
-- Keep NSG SSH access restricted to known admin IPs as defined in section 3.
-- Do not open SSH to GitHub-hosted runner IP ranges for this deployment model.
-- The self-hosted runner uses outbound HTTPS to GitHub and does not require inbound GitHub access to port 22.
-
-  --nsg-name ADLA-NSG \
-  --name ADLA-NSG-ALLOW-SSH \
-  --priority 90 \
-  --source-address-prefixes <YOUR_PUBLIC_IP>/32 \
-  --destination-port-ranges 22 \
-  --protocol Tcp \
-  --access Allow
+  --generate-ssh-keys
 ```
 
-3. Connect via SSH:
+## 3. First VM Access
+
+1. Retrieve public IP:
+
+```bash
+# Run on local admin machine (Azure CLI)
+az network public-ip show \
+  --resource-group ADLA-RG \
+  --name ADLA-VM-PIP \
+  --query ipAddress \
+  --output tsv
+```
+
+2. Connect via SSH:
 
 ```bash
 # Run on local admin machine
@@ -295,17 +296,21 @@ sudo systemctl restart fail2ban
 sudo systemctl enable fail2ban
 ```
 
-## 5. Prepare Web Root and Repository on VM
+## 5. Prepare Web Root on VM
 
-Create deployment path and clone repository:
-
-Repository link: https://github.com/CRGuy506/Arboles-de-la-Antigua/tree/main/Website/LandingPage
+Create deployment path and set initial ownership:
 
 ```bash
 # Run on ADLA-VM
 sudo mkdir -p /var/www/site
 sudo chown -R Admin-ADLA:Admin-ADLA /var/www/site
-git clone https://github.com/CRGuy506/Arboles-de-la-Antigua.git /var/www/site
+```
+
+Create a temporary bootstrap page so HTTP/TLS checks have content before the first CI/CD deployment:
+
+```bash
+# Run on ADLA-VM
+echo '<!doctype html><html><body><h1>ADLA bootstrap</h1></body></html>' | sudo tee /var/www/site/index.html >/dev/null
 ```
 
 ## 6. Install NGINX and Create HTTP Bootstrap Site
@@ -367,7 +372,7 @@ server {
     return 444;
   }
 
-  root /var/www/site/Website/LandingPage;
+  root /var/www/site;
     index index.html;
 
     location / {
@@ -469,16 +474,30 @@ sudo systemctl reload nginx
 
 This repository uses `.github/workflows/deploy-site.yml`.
 
+### 9.0 Deployment scope guardrail (LandingPage only)
+
+The production workflow is intentionally scoped to deploy only content from `Website/LandingPage/`.
+
+Scope controls to keep in place in `.github/workflows/deploy-site.yml`:
+
+- Trigger path filter includes only:
+  - `Website/LandingPage/**`
+  - `.github/workflows/deploy-site.yml`
+- Artifact build source is only:
+  - `Website/LandingPage/`
+- Artifact excludes non-production docs:
+  - `Extras/`
+  - `README.md`
+  - `ARCHITECTURE.md`
+
+Result: commits outside `Website/LandingPage/` do not trigger deploys, and when a deploy runs, only LandingPage files are copied into `DEPLOY_PATH`.
+
 ### 9.1 Add GitHub Actions secrets
 
 In GitHub: Settings -> Secrets and variables -> Actions.
 
 Required:
 
-scm-history-item:c%3A%5CUsers%5Csglockacuna%5CDocuments%5CProjects%5CAdlA?%7B%22repositoryId%22%3A%22scm0%22%2C%22historyItemId%22%3A%223d9a8af920e16ae803384854294f355a2311e4d0%22%2C%22historyItemParentId%22%3A%22a9b34333fbf205e7cb326f81401ae8ad03d613ac%22%2C%22historyItemDisplayId%22%3A%223d9a8af%22%7D- `VM_HOST`: Public IP or DNS of ADLA-VM
-- `VM_USER`: SSH username for dedicated deploy account (example: `gha-deploy`)
-- `VM_SSH_KEY`: Private SSH key for deployment user
-- `VM_HOST_KEY`: host key from known_hosts for strict pinning
 - `DEPLOY_PATH`: `/var/www/site`
 - `HEALTHCHECK_URL`: Production HTTPS URL to validate after deploy (example: `https://arbolesdelaantigua.org/`)
 
@@ -486,10 +505,20 @@ Recommended:
 
 - Use GitHub Environment protection rules for production deploy approvals.
 
-This deployment workflow builds the site artifact in GitHub Actions and copies it to the VM over SSH.
-The VM does not need GitHub credentials or repository clone access.
+This deployment workflow runs on a self-hosted GitHub Actions runner installed on ADLA-VM.
+The runner checks out the repository locally, builds the site artifact, and deploys directly to `DEPLOY_PATH`.
+This model does not require VM SSH host/user/key secrets for deployment.
 The workflow validates artifact SHA-256 checksums before extraction.
 If deployment or health checks fail, it restores the most recent pre-deploy backup archive automatically.
+
+### 9.4 Verify runner scope before production changes
+
+Before merging workflow edits, confirm deployment scope remains limited to LandingPage:
+
+1. Confirm push filters still target `Website/LandingPage/**` plus the workflow file.
+2. Confirm artifact build still uses `rsync` source `Website/LandingPage/`.
+3. Confirm excludes still include `Extras/`, `README.md`, and `ARCHITECTURE.md`.
+4. In a pull request, inspect workflow diff and verify no additional source paths were added.
 
 ### 9.2 Create dedicated GitHub Actions deploy user (least privilege)
 
@@ -501,19 +530,6 @@ sudo adduser --disabled-password --gecos "" gha-deploy
 sudo passwd -l gha-deploy
 ```
 
-Install a dedicated SSH key for this user (do not reuse admin keys):
-
-```bash
-# Run on ADLA-VM
-sudo install -d -m 700 -o gha-deploy -g gha-deploy /home/gha-deploy/.ssh
-sudo touch /home/gha-deploy/.ssh/authorized_keys
-sudo chown gha-deploy:gha-deploy /home/gha-deploy/.ssh/authorized_keys
-sudo chmod 600 /home/gha-deploy/.ssh/authorized_keys
-sudo nano /home/gha-deploy/.ssh/authorized_keys
-```
-
-Paste only the GitHub Actions deploy public key in `authorized_keys`.
-
 Grant access only to deployment content path:
 
 ```bash
@@ -523,7 +539,7 @@ sudo chown -R gha-deploy:gha-deploy /var/www/site
 sudo chmod -R u=rwX,go=rX /var/www/site
 ```
 
-Allow only NGINX config test and reload through sudo (no full sudo access):
+Allow only the commands required by the deployment workflow through sudo (no full sudo access):
 
 ```bash
 # Run on ADLA-VM
@@ -533,32 +549,14 @@ sudo visudo -f /etc/sudoers.d/gha-deploy
 Add:
 
 ```text
-gha-deploy ALL=(root) NOPASSWD:/usr/sbin/nginx -t,/bin/systemctl reload nginx
+gha-deploy ALL=(root) NOPASSWD: /usr/bin/tar, /usr/bin/install, /usr/bin/find, /usr/sbin/nginx, /bin/systemctl
 ```
 
-Optional SSH hardening specific to deploy user:
+Apply secure sudoers permissions:
 
 ```bash
 # Run on ADLA-VM
-sudo nano /etc/ssh/sshd_config
-```
-
-Add:
-
-```text
-Match User gha-deploy
-  PasswordAuthentication no
-  PermitTTY no
-  X11Forwarding no
-  AllowTcpForwarding no
-  PermitTunnel no
-```
-
-Apply SSH config:
-
-```bash
-# Run on ADLA-VM
-sudo systemctl restart ssh
+sudo chmod 440 /etc/sudoers.d/gha-deploy
 ```
 
 Validate effective permissions:
@@ -569,13 +567,49 @@ sudo -l -U gha-deploy
 sudo -u gha-deploy test -w /var/www/site && echo "deploy path writable"
 ```
 
-### 9.3 Run first workflow
+If command paths differ on your VM, verify before saving sudoers:
+
+```bash
+# Run on ADLA-VM
+which tar install find nginx systemctl
+```
+
+### 9.3 Register self-hosted GitHub Actions runner on ADLA-VM
+
+In GitHub:
+
+1. Open repository Settings -> Actions -> Runners.
+2. Select New self-hosted runner.
+3. Choose Linux and X64.
+4. Copy the registration commands GitHub provides.
+
+Run the provided commands on ADLA-VM in a dedicated runner directory:
+
+```bash
+# Run on ADLA-VM
+sudo install -d -m 755 -o gha-deploy -g gha-deploy /home/gha-deploy/actions-runner
+cd /home/gha-deploy/actions-runner
+# Paste and run the commands shown by GitHub for Linux X64 runner setup
+```
+
+Install runner service and start it:
+
+```bash
+# Run on ADLA-VM
+cd /home/gha-deploy/actions-runner
+sudo ./svc.sh install gha-deploy
+sudo ./svc.sh start
+```
+
+Validate that the runner shows as online in GitHub before continuing.
+
+### 9.4 Run first workflow
 
 1. Push workflow and website changes to main.
 2. Run workflow_dispatch (or push under Website/LandingPage).
 3. Confirm deploy job success and the post-deploy health check step passes.
 
-### 9.4 Rollback behavior
+### 9.5 Rollback behavior
 
 - Before every deployment, workflow creates a backup archive of current site contents in `/tmp` on ADLA-VM when existing content is present.
 - Workflow retains the 3 most recent backup archives and automatically removes older backup files.

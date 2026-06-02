@@ -31,7 +31,7 @@ Expected:
 
 ```bash
 # Run on local client machine
-curl -I https://yourdomain.com
+curl -I https://arbolesdelaantigua.org
 ```
 
 Expected:
@@ -96,7 +96,7 @@ uname -r
 
 ```bash
 # Run on local client machine
-echo | openssl s_client -servername yourdomain.com -connect yourdomain.com:443 2>/dev/null | openssl x509 -noout -dates
+echo | openssl s_client -servername arbolesdelaantigua.org -connect arbolesdelaantigua.org:443 2>/dev/null | openssl x509 -noout -dates
 ```
 
 Target:
@@ -113,7 +113,9 @@ Target:
 If the last deployment failed:
 
 - Review workflow logs.
-- Validate VM connectivity and sudoers permissions for deploy user.
+- Validate self-hosted runner status on ADLA-VM.
+- Validate `gha-deploy` sudoers and deploy-path permissions.
+- Re-run a manual `workflow_dispatch` after remediation.
 
 ## 4. Quarterly Maintenance (60 minutes)
 
@@ -123,12 +125,26 @@ If the last deployment failed:
 # Run on ADLA-VM
 sudo grep -E '^(PermitRootLogin|PasswordAuthentication|MaxAuthTries)' /etc/ssh/sshd_config
 sudo -l -U Admin-ADLA
+sudo -l -U gha-deploy
 ```
 
 Verify:
 
 - SSH hardening values are unchanged.
-- Sudoers permissions remain least-privilege.
+- Sudoers permissions remain least-privilege for both admin and deploy users.
+
+### 4.4 Self-hosted runner health review
+
+```bash
+# Run on ADLA-VM
+sudo systemctl status actions.runner.* --no-pager
+ps aux | grep -i Runner.Listener
+```
+
+Verify:
+
+- The runner service is active.
+- The runner process is present and stable.
 
 ### 4.2 NSG IP whitelisting review
 
@@ -184,7 +200,7 @@ sudo journalctl -u nginx --since "-30 min" --no-pager
 
 ```bash
 # Run on local client machine
-curl -I https://yourdomain.com
+curl -I https://arbolesdelaantigua.org
 ```
 
 ### 6.2 After security-relevant incident

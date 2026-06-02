@@ -4,11 +4,137 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Arboles de la Antigua</title>
-  <meta http-equiv="refresh" content="0; url=small%20site.html" />
-  <link rel="canonical" href="small%20site.html" />
+  <meta name="theme-color" content="#1f4f3a" />
+  <meta name="robots" content="noindex" />
+  <meta http-equiv="refresh" content="3; url=small%20site%20%2B%20GA.html" />
+  <style>
+    :root {
+      color-scheme: light;
+      --moss: #2d6a4f;
+      --moss-deep: #1f4f3a;
+      --leaf: #52b788;
+      --gold: #d4a373;
+      --cream: #f8f5ef;
+      --text: #17392b;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      font-family: "DM Sans", "Segoe UI", Tahoma, sans-serif;
+      background:
+        radial-gradient(1200px 500px at 85% -5%, rgba(82, 183, 136, 0.2), rgba(82, 183, 136, 0) 70%),
+        radial-gradient(900px 360px at -10% 105%, rgba(212, 163, 115, 0.2), rgba(212, 163, 115, 0) 70%),
+        linear-gradient(135deg, var(--moss-deep) 0%, var(--moss) 38%, #2e7b5b 100%);
+      color: #fff;
+    }
+
+    .boot-shell {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 1.25rem;
+      box-sizing: border-box;
+    }
+
+    .boot-card {
+      width: min(620px, 100%);
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 22px;
+      box-shadow: 0 18px 45px rgba(12, 30, 22, 0.28);
+      padding: clamp(1.2rem, 4vw, 2rem);
+      text-align: center;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    .brand {
+      margin: 0;
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: clamp(1.55rem, 5vw, 2.15rem);
+      line-height: 1.05;
+      color: var(--moss-deep);
+    }
+
+    .sub {
+      margin: 0.55rem 0 0;
+      font-size: 0.94rem;
+      color: rgba(23, 57, 43, 0.8);
+    }
+
+    .loader {
+      margin: 1rem auto 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 3px solid rgba(45, 106, 79, 0.2);
+      border-top-color: var(--moss);
+      animation: spin 0.8s linear infinite;
+    }
+
+    .status {
+      margin: 0.75rem 0 0;
+      font-size: 0.88rem;
+      color: rgba(23, 57, 43, 0.85);
+    }
+
+    .links {
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: rgba(23, 57, 43, 0.8);
+    }
+
+    .links a {
+      color: var(--moss-deep);
+      font-weight: 700;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 2px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+  <script>
+    (function () {
+      var preferredTarget = 'small%20site%20%2B%20GA.html';
+      var fallbackTarget = 'small%20site.html';
+
+      // Keep this file as a bootstrap entrypoint for NGINX index routing.
+      window.location.replace(preferredTarget);
+
+      // If navigation is blocked by browser policy, fallback remains available below.
+      setTimeout(function () {
+        if (window.location.pathname.endsWith('/index.html') || window.location.pathname === '/' || window.location.pathname === '') {
+          window.location.href = fallbackTarget;
+        }
+      }, 300);
+    })();
+  </script>
 </head>
 <body>
-  <p>Redirecting to the site...</p>
-  <p>If you are not redirected, <a href="small%20site.html">click here</a>.</p>
+  <main class="boot-shell" aria-live="polite">
+    <section class="boot-card" aria-label="Site loading">
+      <h1 class="brand">Arboles de<br />la Antigua</h1>
+      <p class="sub">Cargando la experiencia comunitaria...</p>
+      <div class="loader" aria-hidden="true"></div>
+      <p class="status">Preparando el sitio para usted</p>
+      <p class="links">
+        If redirect takes too long, open
+        <a href="small%20site%20%2B%20GA.html">main site</a>
+        or
+        <a href="small%20site.html">alternate site</a>.
+      </p>
+      <noscript>
+        <p class="links">
+          JavaScript is disabled. Continue to
+          <a href="small%20site%20%2B%20GA.html">main site</a>.
+        </p>
+      </noscript>
+    </section>
+  </main>
 </body>
 </html>

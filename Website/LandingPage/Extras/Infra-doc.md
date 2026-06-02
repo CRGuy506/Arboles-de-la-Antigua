@@ -313,6 +313,35 @@ Create a temporary bootstrap page so HTTP/TLS checks have content before the fir
 echo '<!doctype html><html><body><h1>ADLA bootstrap</h1></body></html>' | sudo tee /var/www/site/index.html >/dev/null
 ```
 
+### 5.1 Initial manual private-repo bootstrap (one-time)
+
+Use this only for first content seed or emergency recovery. Normal updates should come from GitHub Actions.
+
+```bash
+# Run on ADLA-VM
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+ssh-keyscan github.com >> ~/.ssh/known_hosts
+chmod 600 ~/.ssh/known_hosts
+
+export GIT_SSH_COMMAND='ssh -i ~/.ssh/adla_deploy_key -o IdentitiesOnly=yes'
+rm -rf /tmp/adla-repo
+git clone --depth 1 --filter=blob:none --sparse git@github.com:CRGuy506/Arboles-de-la-Antigua.git /tmp/adla-repo
+cd /tmp/adla-repo
+git sparse-checkout set Website/LandingPage
+sudo rsync -a --delete Website/LandingPage/ /var/www/site/
+cd /
+rm -rf /tmp/adla-repo
+```
+
+Sanity check after bootstrap:
+
+```bash
+# Run on ADLA-VM
+sudo ls -la /var/www/site
+sudo test -f /var/www/site/index.html && echo "index.html present"
+```
+
 ## 6. Install NGINX and Create HTTP Bootstrap Site
 
 ### 6.1 Install NGINX
@@ -448,7 +477,8 @@ server {
 
     limit_req zone=limit burst=10 nodelay;
 
-    if ($http_user_agent ~* (curl|wget|nikto|sqlmap|nmap|dirbuster)) {
+    # Keep scanner noise down while still allowing CI/CD health checks.
+    if ($http_user_agent ~* (curl|wget|nikto|sqlmap|nmap|dirbuster) ) {
         return 403;
     }
 
@@ -457,10 +487,12 @@ server {
     }
 
     location / {
-        try_files $uri $uri/ =404;
+      try_files $uri $uri/ /index.html;
     }
 }
 ```
+
+  Important: do not set `root` to `/var/www/site/Website/LandingPage` in this server block. Deployment copies LandingPage files directly into `/var/www/site`.
 
 Apply and validate:
 

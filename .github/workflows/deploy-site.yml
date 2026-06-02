@@ -27,16 +27,28 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Validate required secrets
         run: |
           set -euo pipefail
-          test -n "${DEPLOY_PATH}"
+          if [ -z "${DEPLOY_PATH:-}" ]; then
+            echo "Missing required secret: DEPLOY_PATH"
+            exit 1
+          fi
+          if [ -z "${HEALTHCHECK_URL:-}" ]; then
+            echo "Missing required secret: HEALTHCHECK_URL"
+            exit 1
+          fi
 
       - name: Build deploy artifact
         run: |
           set -euo pipefail
+          if ! command -v rsync >/dev/null 2>&1; then
+            echo "Missing dependency on runner: rsync"
+            echo "Install it on ADLA-VM: sudo apt update ; sudo apt install -y rsync"
+            exit 1
+          fi
           mkdir -p /tmp/landing-site
           rsync -a --delete \
             --exclude 'Extras/' \
@@ -88,9 +100,10 @@ jobs:
       - name: Post-deploy health check
         run: |
           set -euo pipefail
-          target_url="${HEALTHCHECK_URL:-https://127.0.0.1}"
+          target_url="${HEALTHCHECK_URL}"
           echo "Running health check against ${target_url}"
-          curl --fail --show-error --silent --location --retry 4 --retry-delay 3 --max-time 20 "${target_url}" >/dev/null
+          curl --fail --show-error --silent --location --retry 4 --retry-delay 3 --max-time 20 \
+            --user-agent "ADLA-Healthcheck/1.0" "${target_url}" >/dev/null
 
       - name: Roll back on failure
         id: rollback
@@ -118,6 +131,7 @@ jobs:
         if: ${{ failure() && steps.rollback.outcome == 'success' }}
         run: |
           set -euo pipefail
-          target_url="${HEALTHCHECK_URL:-https://127.0.0.1}"
+          target_url="${HEALTHCHECK_URL}"
           echo "Running rollback health check against ${target_url}"
-          curl --fail --show-error --silent --location --retry 4 --retry-delay 3 --max-time 20 "${target_url}" >/dev/null
+          curl --fail --show-error --silent --location --retry 4 --retry-delay 3 --max-time 20 \
+            --user-agent "ADLA-Healthcheck/1.0" "${target_url}" >/dev/null

@@ -79,3 +79,43 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     }
   });
 });
+
+// Tap support for stat bubbles on touch devices.
+const statBoxesWithDetail = Array.from(document.querySelectorAll('.stat-box.has-detail'));
+const isCoarsePointer = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+
+function closeAllStatBubbles() {
+  statBoxesWithDetail.forEach((box) => {
+    box.classList.remove('show-detail');
+  });
+}
+
+if (isCoarsePointer && statBoxesWithDetail.length) {
+  statBoxesWithDetail.forEach((box) => {
+    box.addEventListener('click', (event) => {
+      const wasOpen = box.classList.contains('show-detail');
+      closeAllStatBubbles();
+      if (!wasOpen) {
+        box.classList.add('show-detail');
+      }
+      event.stopPropagation();
+    });
+
+    box.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        const wasOpen = box.classList.contains('show-detail');
+        closeAllStatBubbles();
+        if (!wasOpen) {
+          box.classList.add('show-detail');
+        }
+      }
+    });
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('.stat-box.has-detail')) {
+      closeAllStatBubbles();
+    }
+  });
+}

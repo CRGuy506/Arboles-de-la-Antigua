@@ -16,6 +16,9 @@
 const modalOverlay = document.getElementById('modalOverlay');
 const modalContent = document.getElementById('modalContent');
 let lockedScrollY = 0;
+const PDFJS_CDN_URL = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.7.76/build/pdf.min.mjs';
+const PDFJS_WORKER_CDN_URL = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.7.76/build/pdf.worker.min.mjs';
+let pdfJsModulePromise = null;
 
 function lockBodyScroll() {
   lockedScrollY = window.scrollY || window.pageYOffset || 0;
@@ -82,6 +85,87 @@ function closeModal() {
   modalOverlay.classList.remove('active');
   modalOverlay.setAttribute('aria-hidden', 'true');
   unlockBodyScroll();
+}
+
+async function ensurePdfJsModule() {
+  if (!pdfJsModulePromise) {
+    pdfJsModulePromise = import(PDFJS_CDN_URL)
+      .then((mod) => {
+        mod.GlobalWorkerOptions.workerSrc = PDFJS_WORKER_CDN_URL;
+        return mod;
+      })
+      .catch((err) => {
+        pdfJsModulePromise = null;
+        throw err;
+      });
+  }
+
+  return pdfJsModulePromise;
+}
+
+async function renderPdfFirstPage(canvasEl, loadingEl, pdfUrl, messages = {}) {
+  const loadingText = messages.loading || 'Loading PDF preview...';
+  const fileProtocolText = messages.fileProtocol || 'PDF preview is not available in local file mode. Use the button to open the PDF or run the site with a local server (http://).';
+  const loadFailedText = messages.loadFailed || 'Could not display the PDF preview in this browser. Use the button to open the file.';
+
+  if (window.location.protocol === 'file:') {
+    if (loadingEl) {
+      loadingEl.textContent = fileProtocolText;
+    }
+    return;
+  }
+
+  const withTimeout = (promise, timeoutMs) => new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error('pdf_render_timeout'));
+    }, timeoutMs);
+
+    promise
+      .then((value) => {
+        clearTimeout(timer);
+        resolve(value);
+      })
+      .catch((err) => {
+        clearTimeout(timer);
+        reject(err);
+      });
+  });
+
+  try {
+    const pdfjs = await withTimeout(ensurePdfJsModule(), 5000);
+    const loadingTask = pdfjs.getDocument({ url: pdfUrl, withCredentials: false });
+    const pdf = await withTimeout(loadingTask.promise, 5000);
+    const page = await pdf.getPage(1);
+    const containerWidth = canvasEl.parentElement ? canvasEl.parentElement.clientWidth : 900;
+    const baseViewport = page.getViewport({ scale: 1 });
+    const scale = Math.min(Math.max(containerWidth / baseViewport.width, 0.55), 1.8);
+    const viewport = page.getViewport({ scale });
+    const outputScale = window.devicePixelRatio || 1;
+    const context = canvasEl.getContext('2d', { alpha: false });
+
+    canvasEl.width = Math.floor(viewport.width * outputScale);
+    canvasEl.height = Math.floor(viewport.height * outputScale);
+    canvasEl.style.width = `${Math.floor(viewport.width)}px`;
+    canvasEl.style.height = `${Math.floor(viewport.height)}px`;
+
+    const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
+    await page.render({
+      canvasContext: context,
+      viewport,
+      transform
+    }).promise;
+
+    if (loadingEl) {
+      loadingEl.style.display = 'none';
+    }
+  } catch (err) {
+    if (loadingEl) {
+      const isFileProtocol = window.location.protocol === 'file:';
+      loadingEl.textContent = isFileProtocol
+        ? fileProtocolText
+        : loadFailedText;
+    }
+  }
 }
 
 // Close modal on overlay click (click outside the modal box).
@@ -151,7 +235,8 @@ document.addEventListener('click', (e) => {
       'chip-cohesion': { titleKey: 'valueCohesion', bodyKey: 'modalCohesionBodyHtml' },
       'chip-security': { titleKey: 'valueSecurity', bodyKey: 'modalSecurityBodyHtml' },
       'event-info': { titleKey: 'eventInfoTitle', bodyKey: 'eventInfoBodyHtml' },
-      'event-agenda': { titleKey: 'eventAgendaImageTitle', bodyKey: 'eventAgendaImageBodyHtml' }
+      'event-agenda': { titleKey: 'eventAgendaImageTitle', bodyKey: 'eventAgendaImageBodyHtml' },
+      'annual-report': { titleKey: 'annualReportTitle', bodyKey: 'annualReportBodyHtml' }
     };
 
     const modalConfig = modalConfigById[modalId];
@@ -197,6 +282,53 @@ document.addEventListener('click', (e) => {
       }
     }
 
+    let annualReportRenderConfig = null;
+
+    if (modalId === 'annual-report') {
+      const reportPdfUrl = t.annualReportPdfUrl || fallback.annualReportPdfUrl || '';
+      const reportPdfLinkCta = t.annualReportPdfLinkCta || fallback.annualReportPdfLinkCta || 'Open PDF in a new tab';
+      const previewLoadingText = t.annualReportPreviewLoading || fallback.annualReportPreviewLoading || 'Loading PDF preview...';
+      const previewFileProtocolText = t.annualReportPreviewFileProtocol || fallback.annualReportPreviewFileProtocol || 'PDF preview is not available in local file mode. Use the button to open the PDF or run the site with a local server (http://).';
+      const previewLoadFailedText = t.annualReportPreviewLoadFailed || fallback.annualReportPreviewLoadFailed || 'Could not display the PDF preview in this browser. Use the button to open the file.';
+      const hasPdfUrl = reportPdfUrl && !/^\s*$/.test(reportPdfUrl);
+
+      if (hasPdfUrl) {
+        const encodedReportPdfUrl = encodeURI(reportPdfUrl.trim());
+        const viewerPdfUrl = encodedReportPdfUrl.includes('#')
+          ? encodedReportPdfUrl
+          : `${encodedReportPdfUrl}#page=1&view=FitH`;
+        const previewId = `annualReportPreview-${Date.now()}`;
+        const loadingId = `annualReportLoading-${Date.now()}`;
+
+        annualReportRenderConfig = {
+          previewId,
+          loadingId,
+          viewerPdfUrl,
+          messages: {
+            loading: previewLoadingText,
+            fileProtocol: previewFileProtocolText,
+            loadFailed: previewLoadFailedText
+          }
+        };
+
+        body += `
+          <div style="position:relative; margin-top:0.9rem; border:1px solid color-mix(in srgb, var(--moss) 20%, transparent); border-radius:14px; overflow:auto; background:var(--warm-white); max-height:min(70vh,760px); padding:0.6rem; display:flex; justify-content:center;">
+            <div style="width:100%; display:flex; justify-content:center;">
+              <canvas id="${previewId}" style="display:block; max-width:100%; border-radius:8px; background:#fff;"></canvas>
+            </div>
+            <div id="${loadingId}" style="position:absolute; top:0.65rem; left:50%; transform:translateX(-50%); max-width:calc(100% - 1.2rem); text-align:center; font-size:0.84rem; color:color-mix(in srgb, var(--bark) 62%, transparent); background:color-mix(in srgb, var(--warm-white) 92%, transparent); padding:0.15rem 0.3rem; border-radius:8px;">
+              ${previewLoadingText}
+            </div>
+          </div>
+          <p style="margin-top:0.8rem;text-align:center;">
+            <a href="${encodedReportPdfUrl}" target="_blank" rel="noopener noreferrer" class="btn-ghost" style="display:inline-block;">
+              ${reportPdfLinkCta}
+            </a>
+          </p>
+        `;
+      }
+    }
+
     if (modalId === 'join-whatsapp') {
       const qrImageUrl = t.joinChatQrImageUrl || fallback.joinChatQrImageUrl || '';
       const qrImageAlt = t.joinChatQrImageAlt || fallback.joinChatQrImageAlt || '';
@@ -225,6 +357,14 @@ document.addEventListener('click', (e) => {
     }
 
     openModal({ title, body });
+
+    if (annualReportRenderConfig) {
+      const canvasEl = document.getElementById(annualReportRenderConfig.previewId);
+      const loadingEl = document.getElementById(annualReportRenderConfig.loadingId);
+      if (canvasEl) {
+        renderPdfFirstPage(canvasEl, loadingEl, annualReportRenderConfig.viewerPdfUrl, annualReportRenderConfig.messages);
+      }
+    }
   }
 });
 

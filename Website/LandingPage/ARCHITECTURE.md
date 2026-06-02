@@ -49,7 +49,7 @@ graph TD
   H --> NAVMOB[mobile menu behavior]
   H --> ANCHORSMOOTH[smooth in-page anchor scroll]
 
-  ASSETREF[HTML/translation asset paths use images/*] --> CONSTRAINT[Current files live in Support/*]
+  ASSETREF[HTML and translation paths use Support/General/* and Support/Tiles/*] --> CONSTRAINT[Keep runtime paths aligned with Support subfolders]
 ```
 
 ## Directory Snapshot
@@ -66,7 +66,8 @@ graph TD
 - `js/app.js`: Mobile nav behavior + smooth anchor scrolling.
 - `agenda.txt`: Agenda source notes/reference.
 - `test-translations.html`: Manual translation testing page.
-- `Support/`: Local media/docs currently containing `Agenda.jpg`, `Info.jpg`, `logoADLA.JPG`, `LogoV3.png`, `qrWA.jpg`, plus docs.
+- `Support/General/`: shared site assets (`Agenda.jpeg`, `Info.jpg`, `logoADLA.JPG`, `qrWA.jpg`, `Hero.jpg`, audio, and related media).
+- `Support/Tiles/`: photo tile library for About section imagery.
 
 ## Entry Points
 
@@ -156,10 +157,9 @@ Behavior highlights:
 
 ## Known Constraints and Risks
 
-- Asset path mismatch risk:
-  - Active HTML and translation values reference `images/...` paths.
-  - Current workspace has no `images/` folder; files are in `Support/`.
-  - If deployment does not rewrite/copy paths, logos/QR/event images may fail to load.
+- Asset path coordination risk:
+  - Active HTML and translation values must stay aligned with `Support/General/...` and `Support/Tiles/...` paths.
+  - If assets are reorganized again, stale paths can break logos/QR/event media.
 
 - Placeholder dependencies:
   - About tile images currently use external placeholder URLs.
@@ -176,7 +176,7 @@ Behavior highlights:
 - `translations_backup_corrupted.js`: historical backup, excluded from runtime.
 - `test-translations.html`: QA utility page, not part of main runtime path.
 - `agenda.txt`: source notes; no direct runtime dependency.
-- `Support/Infra-doc.md`, `Support/TS-guide.md`, `Support/Sobre.docx`: documentation/reference assets.
+- `Extras/Infra-doc.md`, `Extras/TS-guide.md`: documentation/reference assets.
 
 ## Update Checklist
 

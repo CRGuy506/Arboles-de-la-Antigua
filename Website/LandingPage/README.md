@@ -22,15 +22,17 @@ Static multilingual landing page for the Arboles de la Antigua project.
 
 ## Assets
 
-Asset files are in `Support/` (renamed from previous `images/` folder).
+Asset files are in `Support/` with grouped subfolders:
+
+- `Support/General/`
+- `Support/Tiles/`
 
 Common files:
 
-- `Support/logoADLA.JPG`
-- `Support/LogoV3.png`
-- `Support/Info.jpg`
-- `Support/Agenda.jpg`
-- `Support/qrWA.jpg`
+- `Support/General/logoADLA.JPG`
+- `Support/General/Info.jpg`
+- `Support/General/Agenda.jpeg`
+- `Support/General/qrWA.jpg`
 
 ## Run Locally
 

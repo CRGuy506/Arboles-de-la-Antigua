@@ -90,7 +90,9 @@ jobs:
           set -euo pipefail
           target_url="${HEALTHCHECK_URL:-https://127.0.0.1}"
           echo "Running health check against ${target_url}"
-          curl --fail --show-error --silent --location --retry 4 --retry-delay 3 --max-time 20 "${target_url}" >/dev/null
+          curl --fail --show-error --silent --location --retry 4 --retry-delay 3 --max-time 20 \
+            --user-agent 'Mozilla/5.0 (compatible; GitHubActionsHealthCheck/1.0)' \
+            "${target_url}" >/dev/null
 
       - name: Roll back on failure
         id: rollback
@@ -120,4 +122,6 @@ jobs:
           set -euo pipefail
           target_url="${HEALTHCHECK_URL:-https://127.0.0.1}"
           echo "Running rollback health check against ${target_url}"
-          curl --fail --show-error --silent --location --retry 4 --retry-delay 3 --max-time 20 "${target_url}" >/dev/null
+          curl --fail --show-error --silent --location --retry 4 --retry-delay 3 --max-time 20 \
+            --user-agent 'Mozilla/5.0 (compatible; GitHubActionsHealthCheck/1.0)' \
+            "${target_url}" >/dev/null

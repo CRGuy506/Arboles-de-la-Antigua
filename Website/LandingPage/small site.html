@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles/main.css?v=20260529" />
+  <link rel="stylesheet" href="styles/main.css?v=20260603-9" />
 </head>
 <body>
 
@@ -263,10 +263,10 @@
             <div class="mosaic-spacer" aria-hidden="true"></div>
             <div class="mosaic-tile mt-n"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-14.jpg" data-photo-title-key="aboutPhoto14Title" data-photo-alt-key="aboutPhoto14Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto14Aria;title:aboutPhoto14Aria"><img src="Support/Tiles/tile-14.jpg" alt="Foto 14" data-i18n-attr="alt:aboutPhoto14Alt" loading="lazy" /></button></div>
             <div class="mosaic-tile mt-o"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-09.jpg" data-photo-title-key="aboutPhoto15Title" data-photo-alt-key="aboutPhoto15Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto15Aria;title:aboutPhoto15Aria"><img src="Support/Tiles/tile-09.jpg" alt="Foto 15" data-i18n-attr="alt:aboutPhoto15Alt" loading="lazy" /></button></div>
-            <div class="floating-badge">
-              <div class="badge-number">2024</div>
-              <div class="badge-text" data-i18n="aboutFounded">Fundados</div>
-            </div>
+          </div>
+          <div class="floating-badge">
+            <div class="badge-number">2024</div>
+            <div class="badge-text" data-i18n="aboutFounded">Fundados</div>
           </div>
         </div>
 
@@ -345,7 +345,7 @@
       <div class="event-card">
         <div class="event-inner">
 
-          <div>
+          <div class="event-intro">
             <span class="event-eyebrow" data-i18n="eventEyebrow">🔔 Próximo evento</span>
             <h2 class="event-title" id="evento-title">
               <span data-i18n-html="eventTitleHtml">Celebración del<br/>Día del Árbol 2026</span>
@@ -353,63 +353,63 @@
             <p class="event-desc" data-i18n="eventDescription">
               Una actividad para inaugurar la nueva temporada de siembra con la plantación de un árbol cachimbo y cuatro arbustos.
             </p>
-
-            <div class="event-meta" aria-label="Detalles del evento" data-i18n-attr="aria-label:eventMetaAria">
-              <div class="event-meta-item">
-                <span class="event-meta-icon" aria-hidden="true">📅</span>
-                <span data-i18n="eventDateLong">Domingo, 14 de junio de 2026</span>
-              </div>
-              <div class="event-meta-item">
-                <span class="event-meta-icon" aria-hidden="true">📍</span>
-                <span data-i18n="eventLocation">Esquina de Amatista y Esmeralda, Residencial La Antigua</span>
-              </div>
-              <div class="event-meta-item">
-                <span class="event-meta-icon" aria-hidden="true">🕗</span>
-                <span data-i18n="eventTimeRange">10:00 a.m.- ~11:30</span>
-              </div>
-              <div class="event-meta-item">
-                <span class="event-meta-icon" aria-hidden="true">🎟️</span>
-                <span data-i18n="eventAdmission">Todos los vecinos están invitados</span>
-              </div>
-              <div class="event-meta-item">
-                <span class="event-meta-icon" aria-hidden="true">☕</span>
-                <span data-i18n="eventRefreshment">Refrigerio a las 11:00 a.m.</span>
-              </div>
-              <div class="event-meta-item">
-                <span class="event-meta-icon" aria-hidden="true">🪴</span>
-                <span data-i18n="eventPlantExchange">Intercambio de plantas e insumos a las 11:00 a.m.</span>
-              </div>
-            </div>
-
-            <div class="event-actions">
-              <a href="#agenda" class="btn-primary" style="display:inline-block;" data-i18n="eventAgendaCta">Ver agenda completa ↓</a>
-              <button
-                type="button"
-                class="btn-ghost"
-                data-modal="event-info"
-                data-i18n="eventInfoCta"
-                aria-label="Abrir brochure del evento"
-                data-i18n-attr="aria-label:eventInfoAria"
-              >
-                Ver brochure
-              </button>
-              <button
-                type="button"
-                class="btn-ghost"
-                data-modal="event-agenda"
-                data-i18n="eventAgendaImageCta"
-                aria-label="Abrir agenda visual del evento"
-                data-i18n-attr="aria-label:eventAgendaImageAria"
-              >
-                Ver agenda visual
-              </button>
-            </div>
           </div>
 
           <div class="event-date-block" aria-hidden="true">
             <div class="date-month" data-i18n="eventMonth">Junio</div>
             <div class="date-day">14</div>
             <div class="date-year">2026</div>
+          </div>
+
+          <div class="event-meta" aria-label="Detalles del evento" data-i18n-attr="aria-label:eventMetaAria">
+            <div class="event-meta-item">
+              <span class="event-meta-icon" aria-hidden="true">📅</span>
+              <span data-i18n="eventDateLong">Domingo, 14 de junio de 2026</span>
+            </div>
+            <div class="event-meta-item">
+              <span class="event-meta-icon" aria-hidden="true">📍</span>
+              <span data-i18n="eventLocation">Esquina de Amatista y Esmeralda, Residencial La Antigua</span>
+            </div>
+            <div class="event-meta-item">
+              <span class="event-meta-icon" aria-hidden="true">🕗</span>
+              <span data-i18n="eventTimeRange">10:00 a.m.- ~11:30</span>
+            </div>
+            <div class="event-meta-item">
+              <span class="event-meta-icon" aria-hidden="true">🎟️</span>
+              <span data-i18n="eventAdmission">Todos los vecinos están invitados</span>
+            </div>
+            <div class="event-meta-item">
+              <span class="event-meta-icon" aria-hidden="true">☕</span>
+              <span data-i18n="eventRefreshment">Refrigerio a las 11:00 a.m.</span>
+            </div>
+            <div class="event-meta-item">
+              <span class="event-meta-icon" aria-hidden="true">🪴</span>
+              <span data-i18n="eventPlantExchange">Intercambio de plantas e insumos a las 11:00 a.m.</span>
+            </div>
+          </div>
+
+          <div class="event-actions">
+            <a href="#agenda" class="btn-primary" style="display:inline-block;" data-i18n="eventAgendaCta">Ver agenda completa ↓</a>
+            <button
+              type="button"
+              class="btn-ghost"
+              data-modal="event-info"
+              data-i18n="eventInfoCta"
+              aria-label="Abrir brochure del evento"
+              data-i18n-attr="aria-label:eventInfoAria"
+            >
+              Ver brochure
+            </button>
+            <button
+              type="button"
+              class="btn-ghost"
+              data-modal="event-agenda"
+              data-i18n="eventAgendaImageCta"
+              aria-label="Abrir agenda visual del evento"
+              data-i18n-attr="aria-label:eventAgendaImageAria"
+            >
+              Ver agenda visual
+            </button>
           </div>
 
         </div>
@@ -564,12 +564,12 @@
   </audio>
 
   <!-- JavaScript modules (load in order) -->
-  <script src="js/translations.js?v=20260529"></script>
-  <script src="js/theme.js?v=20260529"></script>
-  <script src="js/lang.js?v=20260529"></script>
-  <script src="js/modal.js?v=20260529"></script>
-  <script src="js/animations.js?v=20260529"></script>
-  <script src="js/app.js?v=20260602"></script>
+  <script src="js/translations.js?v=20260603-2"></script>
+  <script src="js/theme.js?v=20260603"></script>
+  <script src="js/lang.js?v=20260603"></script>
+  <script src="js/modal.js?v=20260603"></script>
+  <script src="js/animations.js?v=20260603"></script>
+  <script src="js/app.js?v=20260603"></script>
 
 </body>
 </html>

@@ -212,7 +212,106 @@ if (isCoarsePointer && statBoxesWithDetail.length) {
   });
 }
 
+// Keep the about mosaic constrained to the adjacent content height on desktop.
+const aboutSection = document.querySelector('.section-about');
+const aboutLayout = aboutSection ? aboutSection.querySelector('.about-layout') : null;
+const aboutContent = aboutSection ? aboutSection.querySelector('.about-content') : null;
+const aboutVisual = aboutSection ? aboutSection.querySelector('.about-visual') : null;
+const aboutMosaic = aboutSection ? aboutSection.querySelector('.about-mosaic') : null;
+const aboutDesktopMq = window.matchMedia('(min-width: 901px)');
+
+function resetAboutMosaicSizing() {
+  if (!aboutMosaic || !aboutVisual) {
+    return;
+  }
+
+  aboutVisual.style.height = '';
+  aboutMosaic.style.height = '';
+  aboutMosaic.style.setProperty('--mosaic-scale', '1');
+  aboutMosaic.style.setProperty('--mosaic-inv-scale', '1');
+}
+
+function syncAboutMosaicHeight() {
+  if (!aboutLayout || !aboutContent || !aboutVisual || !aboutMosaic) {
+    return;
+  }
+
+  if (!aboutDesktopMq.matches) {
+    resetAboutMosaicSizing();
+    return;
+  }
+
+  const layoutStyles = window.getComputedStyle(aboutLayout);
+  if (layoutStyles.gridTemplateColumns.split(' ').length < 2) {
+    resetAboutMosaicSizing();
+    return;
+  }
+
+  // Reset before measuring intrinsic mosaic height.
+  aboutMosaic.style.height = '';
+  aboutMosaic.style.setProperty('--mosaic-scale', '1');
+  aboutMosaic.style.setProperty('--mosaic-inv-scale', '1');
+  aboutMosaic.style.width = '';
+  aboutVisual.style.height = '';
+
+  const contentHeight = Math.ceil(aboutContent.getBoundingClientRect().height);
+  const naturalMosaicHeight = Math.ceil(aboutMosaic.scrollHeight);
+
+  if (!contentHeight || !naturalMosaicHeight) {
+    resetAboutMosaicSizing();
+    return;
+  }
+
+  const scale = Math.min(1, contentHeight / naturalMosaicHeight);
+  const inverseScale = scale > 0 ? 1 / scale : 1;
+
+  aboutVisual.style.height = `${contentHeight}px`;
+  aboutMosaic.style.height = `${contentHeight}px`;
+  aboutMosaic.style.setProperty('--mosaic-scale', `${scale}`);
+  aboutMosaic.style.setProperty('--mosaic-inv-scale', `${inverseScale}`);
+}
+
+let aboutMosaicFrame = null;
+function scheduleAboutMosaicSync() {
+  if (aboutMosaicFrame !== null) {
+    window.cancelAnimationFrame(aboutMosaicFrame);
+  }
+
+  aboutMosaicFrame = window.requestAnimationFrame(() => {
+    aboutMosaicFrame = null;
+    syncAboutMosaicHeight();
+  });
+}
+
+if (aboutLayout && aboutContent && aboutVisual && aboutMosaic) {
+  window.addEventListener('resize', scheduleAboutMosaicSync);
+  aboutDesktopMq.addEventListener('change', scheduleAboutMosaicSync);
+
+  if (window.ResizeObserver) {
+    const aboutObserver = new ResizeObserver(() => {
+      scheduleAboutMosaicSync();
+    });
+    aboutObserver.observe(aboutContent);
+    aboutObserver.observe(aboutMosaic);
+  }
+
+  aboutMosaic.querySelectorAll('img').forEach((image) => {
+    if (!image.complete) {
+      image.addEventListener('load', scheduleAboutMosaicSync, { once: true });
+      image.addEventListener('error', scheduleAboutMosaicSync, { once: true });
+    }
+  });
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(scheduleAboutMosaicSync);
+  }
+
+  scheduleAboutMosaicSync();
+}
+
 window.addEventListener('load', () => {
+  scheduleAboutMosaicSync();
+
   if (!landingAudio || hasPlayedLandingAudio()) {
     hideLandingAudioFallbackToggle();
     return;

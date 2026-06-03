@@ -786,12 +786,17 @@ a { color: inherit; text-decoration: none; }
 
 .about-visual {
   position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
 }
 /* ── About mosaic ──────────────────────────────── */
 /*
   Asymmetric gallery (5 cols × 6 rows) using all 15 tiles.
 */
 .about-mosaic {
+  --mosaic-scale: 1;
+  --mosaic-inv-scale: 1;
   position: relative;
   column-count: 3;
   column-fill: balance;
@@ -800,8 +805,12 @@ a { color: inherit; text-decoration: none; }
   max-width: 100%;
   height: auto;
   overflow: hidden;
-  padding: 0 84px 84px 0;
+  padding: 0 0 84px;
   isolation: isolate;
+  transform-origin: top center;
+  transform: scale(var(--mosaic-scale));
+  width: calc(100% * var(--mosaic-inv-scale));
+  margin-inline: auto;
 }
 
 .mt-a,
@@ -876,6 +885,8 @@ a { color: inherit; text-decoration: none; }
   .about-mosaic {
     column-count: 2;
     height: auto;
+    transform: none;
+    width: 100%;
   }
 
   .mosaic-spacer {
@@ -938,6 +949,17 @@ a { color: inherit; text-decoration: none; }
   color: color-mix(in srgb, var(--bark) 72%, transparent);
   line-height: 1.8;
   margin-bottom: 1.2rem;
+}
+
+/* Soft text justification for longer reading passages. */
+.about-body,
+.event-desc,
+.agenda-subtitle,
+.agenda-body-detail {
+  text-align: justify;
+  text-justify: inter-word;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
 
 .about-subheading {
@@ -1035,11 +1057,21 @@ a { color: inherit; text-decoration: none; }
 
 .event-inner {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 3rem;
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'intro date'
+    'meta meta'
+    'actions actions';
+  column-gap: 2rem;
+  row-gap: 1.35rem;
+  align-items: start;
   position: relative;
   z-index: 1;
+}
+
+.event-intro {
+  grid-area: intro;
+  min-width: 0;
 }
 
 .event-eyebrow {
@@ -1076,6 +1108,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 .event-meta {
+  grid-area: meta;
   display: flex;
   gap: 1.5rem;
   flex-wrap: wrap;
@@ -1083,16 +1116,25 @@ a { color: inherit; text-decoration: none; }
 }
 
 .event-actions {
-  display: flex;
+  grid-area: actions;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   gap: 0.7rem;
-  flex-wrap: wrap;
-  align-items: center;
+  align-items: stretch;
+  width: min(100%, 660px);
+  margin-inline: auto;
 }
 
 .event-actions .btn-primary,
 .event-actions .btn-ghost {
+  display: inline-flex !important;
+  align-items: center;
   font-size: 0.92rem;
   padding: 0.72rem 1.2rem;
+  min-width: 0;
+  width: 100%;
+  text-align: center;
+  justify-content: center;
 }
 
 .event-meta-item {
@@ -1108,14 +1150,18 @@ a { color: inherit; text-decoration: none; }
 }
 
 .event-date-block {
+  grid-area: date;
+  justify-self: end;
   flex-shrink: 0;
   background: linear-gradient(145deg, var(--moss), var(--moss-light));
   color: #fff;
   border-radius: var(--r-lg);
-  padding: 2rem 2.5rem;
+  padding: clamp(1.2rem, 3.8vw, 2rem) clamp(1.35rem, 4.8vw, 2.5rem);
   text-align: center;
   box-shadow: 0 12px 32px color-mix(in srgb, var(--moss) 40%, transparent);
-  min-width: 160px;
+  min-width: clamp(124px, 34vw, 160px);
+  width: fit-content;
+  margin: 0;
 }
 
 .date-month {
@@ -1128,7 +1174,7 @@ a { color: inherit; text-decoration: none; }
 
 .date-day {
   font-family: 'Playfair Display', serif;
-  font-size: 4rem;
+  font-size: clamp(2.6rem, 10vw, 4rem);
   font-weight: 900;
   line-height: 1;
   margin: 0.1rem 0;
@@ -1407,10 +1453,61 @@ a { color: inherit; text-decoration: none; }
 
   .event-inner {
     grid-template-columns: 1fr;
+    grid-template-areas:
+      'intro'
+      'date'
+      'meta'
+      'actions';
+    row-gap: 1.15rem;
+  }
+
+  .event-title {
+    font-size: clamp(1.65rem, 4.9vw, 2.35rem);
+    margin-bottom: 0.8rem;
+  }
+
+  .event-desc {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin-bottom: 1.2rem;
+    max-width: 48ch;
   }
 
   .event-date-block {
+    padding: 1rem 1.2rem;
+    min-width: 116px;
+  }
+
+  .date-month {
+    font-size: 0.7rem;
+  }
+
+  .date-day {
+    font-size: clamp(2.25rem, 8.2vw, 2.95rem);
+  }
+
+  .date-year {
+    font-size: 0.76rem;
+  }
+
+  .event-meta {
+    gap: 0.95rem;
+    margin-bottom: 1.3rem;
+  }
+
+  .event-meta-item {
+    font-size: 0.85rem;
+  }
+
+  .event-actions {
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    width: min(100%, 560px);
+  }
+
+  .event-date-block {
+    justify-self: center;
     width: fit-content;
+    margin: 0 auto;
   }
 
   .agenda-timeline::before { left: 64px; }
@@ -1583,6 +1680,14 @@ a { color: inherit; text-decoration: none; }
     gap: 0.75rem;
   }
 
+  .about-body,
+  .event-desc,
+  .agenda-subtitle,
+  .agenda-body-detail {
+    text-align: left;
+    hyphens: none;
+  }
+
   .footer-identity { padding-left: 4.7rem; }
   .footer-logo { height: 84px; }
   .footer-inner { gap: 1.2rem; }
@@ -1612,6 +1717,38 @@ a { color: inherit; text-decoration: none; }
     --brand-logo-height: 56px;
   }
 
+
+@media (max-width: 480px) {
+  .about-visual {
+    width: min(100%, 336px);
+    margin-inline: auto;
+  }
+
+  .about-mosaic {
+    width: 100%;
+    max-width: 100%;
+    margin-inline: auto;
+    padding: 0 0 54px;
+  }
+
+  .floating-badge {
+    right: 8px;
+    bottom: 8px;
+    padding: 0.72rem 0.88rem;
+  }
+
+  .badge-number {
+    font-size: 1.7rem;
+  }
+
+  .date-month {
+    font-size: 0.72rem;
+  }
+
+  .date-year {
+    font-size: 0.78rem;
+  }
+}
   .brand-text {
     font-size: 0.98rem;
     line-height: 0.98;

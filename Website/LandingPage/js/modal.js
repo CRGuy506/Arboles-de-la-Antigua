@@ -43,7 +43,7 @@ function unlockBodyScroll() {
 
 /**
  * Opens a modal with custom title and HTML content.
- * @param {Object} config - { title: string, body: string (HTML) }
+ * @param {Object} config - { title: string, body: string (HTML), modalClass?: string }
  */
 function openModal(config) {
   // Create close button
@@ -69,6 +69,10 @@ function openModal(config) {
 
   // Assemble and display modal
   modalContent.innerHTML = '';
+  modalContent.className = 'modal';
+  if (config.modalClass) {
+    modalContent.classList.add(config.modalClass);
+  }
   modalContent.appendChild(closeBtn);
   modalContent.appendChild(header);
   modalContent.appendChild(body);
@@ -217,12 +221,12 @@ document.addEventListener('click', (e) => {
           <img
             src="${photoSrc}"
             alt="${alt}"
-            style="width:100%;max-height:min(75vh,780px);object-fit:contain;border-radius:14px;display:block;background:color-mix(in srgb, var(--sky) 70%, #fff 30%);"
+            style="width:100%;max-height:min(82vh,900px);object-fit:contain;border-radius:10px;display:block;"
           />
         `;
       }
 
-      openModal({ title, body });
+      openModal({ title, body, modalClass: 'modal-photo-wide' });
       return;
     }
 

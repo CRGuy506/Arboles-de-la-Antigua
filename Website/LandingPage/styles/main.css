@@ -787,63 +787,6 @@ a { color: inherit; text-decoration: none; }
 .about-visual {
   position: relative;
 }
-
-.about-mosaic {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.mosaic-tile {
-  border-radius: var(--r-md);
-  overflow: hidden;
-  position: relative;
-}
-
-.mosaic-tile:first-child {
-  grid-row: span 2;
-}
-
-.mosaic-fill {
-  width: 100%;
-  height: 100%;
-  min-height: 140px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 3rem;
-}
-
-.mosaic-fill-tall { min-height: 300px; }
-
-.about-photo-tile {
-  border: 0;
-  padding: 0;
-  cursor: zoom-in;
-  background: transparent;
-}
-
-.about-photo-tile img {
-  width: 100%;
-  height: 100%;
-  min-height: inherit;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.35s ease;
-}
-
-.about-photo-tile:hover img {
-  transform: scale(1.04);
-}
-
-.about-photo-tile:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--moss) 45%, transparent);
-  outline-offset: 3px;
-}
-
-.tile-a { background: linear-gradient(145deg, #c8e6c9, #a5d6a7); }
-.tile-b { background: linear-gradient(145deg, #ffe0b2, #ffcc80); }
-.tile-c { background: linear-gradient(145deg, #b2dfdb, #80cbc4); }
 /* ── About mosaic ──────────────────────────────── */
 /*
   Layout (3 cols × 3 rows):
@@ -904,6 +847,18 @@ a { color: inherit; text-decoration: none; }
 .about-photo-tile:focus-visible {
   outline: 2px solid color-mix(in srgb, var(--moss) 45%, transparent);
   outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .about-mosaic {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 190px 140px 140px 190px;
+    grid-template-areas:
+      "a a"
+      "b c"
+      "b d"
+      "e e";
+  }
 }
 
 .floating-badge {
@@ -1741,8 +1696,60 @@ a { color: inherit; text-decoration: none; }
   animation: none;
 }
 
+.modal.modal-photo {
+  max-width: min(1100px, 96vw);
+  padding: clamp(1rem, 2.8vw, 1.6rem);
+}
+
+.modal.modal-photo .modal-header {
+  padding-right: 2.4rem;
+}
+
+.modal.modal-photo .modal-body {
+  margin-top: 0.45rem;
+}
+
 .modal-overlay.active .modal {
   animation: slideIn 0.4s ease-out;
+}
+
+/* Photo lightbox variant — wide, dark, image-dominant */
+.modal.modal-photo-wide {
+  max-width: min(92vw, 1100px);
+  padding: 0.85rem;
+  background: #151f17;
+  border-color: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.modal.modal-photo-wide .modal-close {
+  top: 0.75rem;
+  right: 0.75rem;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.modal.modal-photo-wide .modal-close:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.modal.modal-photo-wide .modal-header {
+  margin-bottom: 0;
+  padding-right: 0;
+  margin-top: 0.65rem;
+  text-align: center;
+}
+
+.modal.modal-photo-wide .modal-title {
+  font-size: clamp(0.88rem, 2vw, 1.1rem);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: 'DM Sans', sans-serif;
+  font-style: italic;
+}
+
+.modal.modal-photo-wide .modal-body {
+  color: rgba(255, 255, 255, 0.72);
 }
 
 @keyframes slideIn {

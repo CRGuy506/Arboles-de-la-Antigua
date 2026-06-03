@@ -309,6 +309,56 @@ if (aboutLayout && aboutContent && aboutVisual && aboutMosaic) {
   scheduleAboutMosaicSync();
 }
 
+// Mitigate transient CDN/origin failures (e.g., 503) on gallery tiles by retrying.
+const aboutTileImages = Array.from(document.querySelectorAll('.about-photo-tile img'));
+const maxTileImageRetries = 2;
+
+function withRetryParam(url, attempt) {
+  const separator = url.includes('?') ? '&' : '?';
+  return `${url}${separator}retry=${attempt}`;
+}
+
+function withUppercaseJpg(url) {
+  return url.replace(/\.jpg(\?.*)?$/i, (match, suffix = '') => `.JPG${suffix}`);
+}
+
+function handleTileImageError(event) {
+  const image = event.currentTarget;
+  const baseSrc = image.dataset.baseSrc || image.getAttribute('src') || '';
+  const currentRetry = Number(image.dataset.retryCount || '0');
+
+  if (!baseSrc) {
+    return;
+  }
+
+  if (currentRetry < maxTileImageRetries) {
+    const nextRetry = currentRetry + 1;
+    image.dataset.retryCount = String(nextRetry);
+
+    window.setTimeout(() => {
+      image.src = withRetryParam(baseSrc, nextRetry);
+    }, 600 * nextRetry);
+    return;
+  }
+
+  if (image.dataset.triedUppercaseExt !== 'true' && /\.jpg(\?.*)?$/i.test(baseSrc)) {
+    image.dataset.triedUppercaseExt = 'true';
+    image.dataset.retryCount = '0';
+    image.src = withUppercaseJpg(baseSrc);
+  }
+}
+
+aboutTileImages.forEach((image) => {
+  const src = image.getAttribute('src');
+  if (!src) {
+    return;
+  }
+
+  image.dataset.baseSrc = src;
+  image.dataset.retryCount = '0';
+  image.addEventListener('error', handleTileImageError);
+});
+
 window.addEventListener('load', () => {
   scheduleAboutMosaicSync();
 

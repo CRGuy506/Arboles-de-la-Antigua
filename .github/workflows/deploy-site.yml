@@ -98,7 +98,7 @@ jobs:
           if [ -d "${DEPLOY_PATH}" ] && find "${DEPLOY_PATH}" -mindepth 1 -print -quit | grep -q .; then
             backup_file="/tmp/landing-site-backup-$(date +%Y%m%d%H%M%S).tgz"
             sudo /usr/bin/tar -C "${DEPLOY_PATH}" -czf "${backup_file}" .
-            ls -1t /tmp/landing-site-backup-*.tgz 2>/dev/null | tail -n +4 | xargs -r rm -f
+            ls -1t /tmp/landing-site-backup-*.tgz 2>/dev/null | tail -n +4 | xargs -r sudo /usr/bin/rm -f || echo 'Warning: could not prune old backups'
           fi
           printf '%s\n' "${backup_file}" > /tmp/landing-site-last-backup-path.txt
 
@@ -114,9 +114,16 @@ jobs:
           set -euo pipefail
           target_url="${HEALTHCHECK_URL}"
           echo "Running health check against ${target_url}"
-          curl --fail --show-error --silent --location --retry 4 --retry-delay 3 --max-time 20 \
+          http_code="$(curl --show-error --silent --location --retry 4 --retry-delay 3 --max-time 20 \
             --user-agent 'Mozilla/5.0 (compatible; GitHubActionsHealthCheck/1.0)' \
-            "${target_url}" >/dev/null
+            --output /tmp/landing-healthcheck-body.txt \
+            --write-out '%{http_code}' \
+            "${target_url}")"
+          if [ "${http_code}" -lt 200 ] || [ "${http_code}" -ge 400 ]; then
+            echo "Health check failed with HTTP ${http_code}"
+            head -c 400 /tmp/landing-healthcheck-body.txt || true
+            exit 1
+          fi
 
       - name: Roll back on failure
         id: rollback
@@ -146,6 +153,13 @@ jobs:
           set -euo pipefail
           target_url="${HEALTHCHECK_URL}"
           echo "Running rollback health check against ${target_url}"
-          curl --fail --show-error --silent --location --retry 4 --retry-delay 3 --max-time 20 \
+          http_code="$(curl --show-error --silent --location --retry 4 --retry-delay 3 --max-time 20 \
             --user-agent 'Mozilla/5.0 (compatible; GitHubActionsHealthCheck/1.0)' \
-            "${target_url}" >/dev/null
+            --output /tmp/landing-rollback-healthcheck-body.txt \
+            --write-out '%{http_code}' \
+            "${target_url}")"
+          if [ "${http_code}" -lt 200 ] || [ "${http_code}" -ge 400 ]; then
+            echo "Rollback health check failed with HTTP ${http_code}"
+            head -c 400 /tmp/landing-rollback-healthcheck-body.txt || true
+            exit 1
+          fi

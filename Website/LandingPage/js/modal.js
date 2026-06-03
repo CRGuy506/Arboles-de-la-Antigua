@@ -43,7 +43,7 @@ function unlockBodyScroll() {
 
 /**
  * Opens a modal with custom title and HTML content.
- * @param {Object} config - { title: string, body: string (HTML) }
+ * @param {Object} config - { title: string, body: string (HTML), modalClass?: string }
  */
 function openModal(config) {
   // Create close button
@@ -54,14 +54,6 @@ function openModal(config) {
   closeBtn.innerHTML = '×';
   closeBtn.addEventListener('click', closeModal);
 
-  // Create header
-  const header = document.createElement('div');
-  header.className = 'modal-header';
-  const title = document.createElement('h2');
-  title.className = 'modal-title';
-  title.textContent = config.title || '';
-  header.appendChild(title);
-
   // Create body
   const body = document.createElement('div');
   body.className = 'modal-body';
@@ -69,8 +61,20 @@ function openModal(config) {
 
   // Assemble and display modal
   modalContent.innerHTML = '';
+  modalContent.className = 'modal';
+  if (config.modalClass) {
+    modalContent.classList.add(config.modalClass);
+  }
   modalContent.appendChild(closeBtn);
-  modalContent.appendChild(header);
+  if (config.title) {
+    const header = document.createElement('div');
+    header.className = 'modal-header';
+    const title = document.createElement('h2');
+    title.className = 'modal-title';
+    title.textContent = config.title;
+    header.appendChild(title);
+    modalContent.appendChild(header);
+  }
   modalContent.appendChild(body);
 
   modalOverlay.classList.add('active');
@@ -203,12 +207,10 @@ document.addEventListener('click', (e) => {
     const t = allTranslations[lang] || fallback;
 
     if (modalId === 'about-photo') {
-      const titleKey = trigger.getAttribute('data-photo-title-key') || '';
       const altKey = trigger.getAttribute('data-photo-alt-key') || '';
       const photoSrc = (trigger.getAttribute('data-photo-src') || '').trim();
 
-      const title = (titleKey && (t[titleKey] || fallback[titleKey])) || '';
-      const alt = (altKey && (t[altKey] || fallback[altKey])) || title || 'Photo';
+      const alt = (altKey && (t[altKey] || fallback[altKey])) || 'Photo';
       const fallbackBody = t.aboutPhotoFallbackBody || fallback.aboutPhotoFallbackBody || '';
 
       let body = fallbackBody;
@@ -217,12 +219,12 @@ document.addEventListener('click', (e) => {
           <img
             src="${photoSrc}"
             alt="${alt}"
-            style="width:100%;max-height:min(75vh,780px);object-fit:contain;border-radius:14px;display:block;background:color-mix(in srgb, var(--sky) 70%, #fff 30%);"
+            style="width:100%;max-height:min(82vh,900px);object-fit:contain;border-radius:10px;display:block;"
           />
         `;
       }
 
-      openModal({ title, body });
+      openModal({ body, modalClass: 'modal-photo-wide' });
       return;
     }
 
@@ -249,11 +251,15 @@ document.addEventListener('click', (e) => {
 
     // Append a translatable video CTA for the security modal when URL is provided.
     if (modalId === 'chip-security') {
+      const videoEmbedHtml = t.modalSecurityVideoEmbedHtml || fallback.modalSecurityVideoEmbedHtml || '';
       const videoUrl = t.modalSecurityVideoUrl || fallback.modalSecurityVideoUrl || '';
       const videoCta = t.modalSecurityVideoCta || fallback.modalSecurityVideoCta || 'Ver video';
       const isValidVideoUrl = /^https?:\/\//i.test(videoUrl);
+      const hasEmbed = typeof videoEmbedHtml === 'string' && videoEmbedHtml.trim().length > 0;
 
-      if (isValidVideoUrl) {
+      if (hasEmbed) {
+        body += videoEmbedHtml;
+      } else if (isValidVideoUrl) {
         body += `
           <p>
             <a href="${videoUrl}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="display:inline-block;">

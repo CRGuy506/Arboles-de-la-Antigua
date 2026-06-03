@@ -781,7 +781,7 @@ a { color: inherit; text-decoration: none; }
   display: grid;
   grid-template-columns: 1fr 1.1fr;
   gap: 4rem;
-  align-items: center;
+  align-items: start;
 }
 
 .about-visual {
@@ -789,29 +789,44 @@ a { color: inherit; text-decoration: none; }
 }
 /* ── About mosaic ──────────────────────────────── */
 /*
-  Layout (3 cols × 3 rows):
-    a  a  b   row 1 ~210px  — tile-06 landscape wide + tile-01 portrait tall
-    c  d  b   row 2 ~145px  — tile-09 portrait tall  + tile-11 landscape
-    c  e  e   row 3 ~195px  — tile-09 cont.           + tile-15 landscape wide
+  Asymmetric gallery (5 cols × 6 rows) using all 15 tiles.
 */
 .about-mosaic {
-  display: grid;
-  grid-template-columns: 1.1fr 0.95fr 0.95fr;
-  grid-template-rows: 210px 145px 195px;
-  grid-template-areas:
-    "a a b"
-    "c d b"
-    "c e e";
-  gap: 8px;
+  position: relative;
+  column-count: 3;
+  column-fill: balance;
+  column-gap: 10px;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  overflow: hidden;
+  padding: 0 84px 84px 0;
+  isolation: isolate;
 }
 
-.mt-a { grid-area: a; }
-.mt-b { grid-area: b; }
-.mt-c { grid-area: c; }
-.mt-d { grid-area: d; }
-.mt-e { grid-area: e; }
+.mt-a,
+.mt-b,
+.mt-c,
+.mt-d,
+.mt-e,
+.mt-f,
+.mt-g,
+.mt-h,
+.mt-i,
+.mt-j,
+.mt-k,
+.mt-l,
+.mt-m,
+.mt-n,
+.mt-o {
+  grid-area: auto;
+}
 
 .mosaic-tile {
+  display: inline-block;
+  width: 100%;
+  margin: 0 0 10px;
+  break-inside: avoid;
   border-radius: var(--r-md);
   overflow: hidden;
   position: relative;
@@ -819,7 +834,6 @@ a { color: inherit; text-decoration: none; }
 
 .mosaic-fill {
   width: 100%;
-  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -834,8 +848,7 @@ a { color: inherit; text-decoration: none; }
 
 .about-photo-tile img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
   display: block;
   transition: transform 0.35s ease;
 }
@@ -849,29 +862,44 @@ a { color: inherit; text-decoration: none; }
   outline-offset: 3px;
 }
 
+.mosaic-spacer {
+  display: inline-block;
+  width: 100%;
+  height: 54px;
+  margin: 0 0 10px;
+  break-inside: avoid;
+  pointer-events: none;
+  opacity: 0;
+}
+
 @media (max-width: 640px) {
   .about-mosaic {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 190px 140px 140px 190px;
-    grid-template-areas:
-      "a a"
-      "b c"
-      "b d"
-      "e e";
+    column-count: 2;
+    height: auto;
+  }
+
+  .mosaic-spacer {
+    display: none;
+  }
+}
+
+@media (max-width: 460px) {
+  .about-mosaic {
+    column-count: 1;
   }
 }
 
 .floating-badge {
   position: absolute;
-  bottom: -16px;
-  right: -16px;
+  bottom: 14px;
+  right: 14px;
   background: var(--moss);
   color: #fff;
   border-radius: var(--r-md);
   padding: 1rem 1.25rem;
   box-shadow: var(--shadow-md);
   text-align: center;
-  z-index: 2;
+  z-index: 5;
 }
 
 .badge-number {
@@ -1369,12 +1397,12 @@ a { color: inherit; text-decoration: none; }
   .about-visual { order: -1; }
 
   .floating-badge {
-    display: inline-block;
-    position: static;
-    margin-top: 0.85rem;
-    margin-left: auto;
-    margin-right: 0;
-    padding: 0.8rem 1rem;
+    display: block;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    margin: 0;
+    padding: 0.78rem 0.95rem;
   }
 
   .event-inner {

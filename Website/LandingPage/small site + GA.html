@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles/main.css?v=20260602" />
+  <link rel="stylesheet" href="styles/main.css?v=20260529" />
   <style>
     .cookie-consent-overlay {
       position: fixed;
@@ -113,6 +113,7 @@
       send_page_view: false
     });
   </script>
+
 </head>
 <body>
 
@@ -197,6 +198,21 @@
             </div>
           </div>
           <!-- Theme toggle button: moon icon appears in light mode, sun icon in dark mode. -->
+          <button
+            type="button"
+            id="landingAudioFallbackToggle"
+            class="audio-fallback-toggle"
+            aria-label="Reproducir sonido"
+            title="Reproducir sonido"
+            hidden
+          >
+            <span class="sr-only">Reproducir sonido</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
+              <path d="M18.5 5.5a9 9 0 0 1 0 13"></path>
+            </svg>
+          </button>
           <button id="themeToggle" class="theme-toggle" aria-label="Cambiar tema" title="Cambiar tema" data-i18n-attr="aria-label:themeToggleAria;title:themeToggleTitle">
             <!-- Moon icon (shown in light mode) -->
             <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none"
@@ -238,6 +254,15 @@
   ══════════════════════════════════════════════ -->
   <section class="hero" aria-label="Encabezado principal" data-i18n-attr="aria-label:heroAria">
     <div class="container">
+      <div class="hero-banner fade-up">
+        <img
+          src="Support/General/Hero.jpg"
+          alt="Residencial La Antigua con su entorno natural"
+          class="hero-banner-image"
+          fetchpriority="high"
+        />
+      </div>
+
       <div class="hero-layout">
 
         <div class="hero-content">
@@ -327,52 +352,27 @@
 
         <div class="about-visual">
           <div class="about-mosaic">
-            <div class="mosaic-tile">
-              <button
-                type="button"
-                class="mosaic-fill mosaic-fill-tall tile-a about-photo-tile"
-                data-modal="about-photo"
-                data-photo-src="https://placehold.co/900x1200/5f8f52/ffffff?text=IMAGEN+DE+ESMERALDA+CON+ARBOLES"
-                data-photo-title-key="aboutPhoto1Title"
-                data-photo-alt-key="aboutPhoto1Alt"
-                aria-label="Abrir foto del equipo en tamaño completo"
-                data-i18n-attr="aria-label:aboutPhoto1Aria;title:aboutPhoto1Aria"
-              >
-                <img src="https://placehold.co/900x1200/5f8f52/ffffff?text=IMAGEN+DE+ESMERALDA+CON+ARBOLES" alt="Foto del equipo vecinal" data-i18n-attr="alt:aboutPhoto1Alt" loading="lazy" />
-              </button>
+            <div class="mosaic-tile mt-a"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-06.jpg" data-photo-title-key="aboutPhoto1Title" data-photo-alt-key="aboutPhoto1Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto1Aria;title:aboutPhoto1Aria"><img src="Support/Tiles/tile-06.jpg" alt="Foto 1" data-i18n-attr="alt:aboutPhoto1Alt" loading="lazy" /></button></div>
+            <div class="mosaic-tile mt-b"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-15.jpg" data-photo-title-key="aboutPhoto2Title" data-photo-alt-key="aboutPhoto2Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto2Aria;title:aboutPhoto2Aria"><img src="Support/Tiles/tile-15.jpg" alt="Foto 2" data-i18n-attr="alt:aboutPhoto2Alt" loading="lazy" /></button></div>
+            <div class="mosaic-tile mt-c"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-11.jpg" data-photo-title-key="aboutPhoto3Title" data-photo-alt-key="aboutPhoto3Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto3Aria;title:aboutPhoto3Aria"><img src="Support/Tiles/tile-11.jpg" alt="Foto 3" data-i18n-attr="alt:aboutPhoto3Alt" loading="lazy" /></button></div>
+            <div class="mosaic-tile mt-d"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-04.jpg" data-photo-title-key="aboutPhoto4Title" data-photo-alt-key="aboutPhoto4Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto4Aria;title:aboutPhoto4Aria"><img src="Support/Tiles/tile-04.jpg" alt="Foto 4" data-i18n-attr="alt:aboutPhoto4Alt" loading="lazy" /></button></div>
+            <div class="mosaic-tile mt-e"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-05.jpg" data-photo-title-key="aboutPhoto5Title" data-photo-alt-key="aboutPhoto5Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto5Aria;title:aboutPhoto5Aria"><img src="Support/Tiles/tile-05.jpg" alt="Foto 5" data-i18n-attr="alt:aboutPhoto5Alt" loading="lazy" /></button></div>
+            <div class="mosaic-tile mt-f"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-01.jpg" data-photo-title-key="aboutPhoto6Title" data-photo-alt-key="aboutPhoto6Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto6Aria;title:aboutPhoto6Aria"><img src="Support/Tiles/tile-01.jpg" alt="Foto 6" data-i18n-attr="alt:aboutPhoto6Alt" loading="lazy" /></button></div>
+            <div class="mosaic-tile mt-g"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-07.jpg" data-photo-title-key="aboutPhoto7Title" data-photo-alt-key="aboutPhoto7Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto7Aria;title:aboutPhoto7Aria"><img src="Support/Tiles/tile-07.jpg" alt="Foto 7" data-i18n-attr="alt:aboutPhoto7Alt" loading="lazy" /></button></div>
+            <div class="mosaic-spacer" aria-hidden="true"></div>
+            <div class="mosaic-tile mt-h"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-08.jpg" data-photo-title-key="aboutPhoto8Title" data-photo-alt-key="aboutPhoto8Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto8Aria;title:aboutPhoto8Aria"><img src="Support/Tiles/tile-08.jpg" alt="Foto 8" data-i18n-attr="alt:aboutPhoto8Alt" loading="lazy" /></button></div>
+            <div class="mosaic-tile mt-i"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-02.jpg" data-photo-title-key="aboutPhoto9Title" data-photo-alt-key="aboutPhoto9Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto9Aria;title:aboutPhoto9Aria"><img src="Support/Tiles/tile-02.jpg" alt="Foto 9" data-i18n-attr="alt:aboutPhoto9Alt" loading="lazy" /></button></div>
+            <div class="mosaic-tile mt-j"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-10.jpg" data-photo-title-key="aboutPhoto10Title" data-photo-alt-key="aboutPhoto10Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto10Aria;title:aboutPhoto10Aria"><img src="Support/Tiles/tile-10.jpg" alt="Foto 10" data-i18n-attr="alt:aboutPhoto10Alt" loading="lazy" /></button></div>
+            <div class="mosaic-tile mt-k"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-03.jpg" data-photo-title-key="aboutPhoto11Title" data-photo-alt-key="aboutPhoto11Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto11Aria;title:aboutPhoto11Aria"><img src="Support/Tiles/tile-03.jpg" alt="Foto 11" data-i18n-attr="alt:aboutPhoto11Alt" loading="lazy" /></button></div>
+            <div class="mosaic-tile mt-l"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-12.jpg" data-photo-title-key="aboutPhoto12Title" data-photo-alt-key="aboutPhoto12Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto12Aria;title:aboutPhoto12Aria"><img src="Support/Tiles/tile-12.jpg" alt="Foto 12" data-i18n-attr="alt:aboutPhoto12Alt" loading="lazy" /></button></div>
+            <div class="mosaic-tile mt-m"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-13.jpg" data-photo-title-key="aboutPhoto13Title" data-photo-alt-key="aboutPhoto13Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto13Aria;title:aboutPhoto13Aria"><img src="Support/Tiles/tile-13.jpg" alt="Foto 13" data-i18n-attr="alt:aboutPhoto13Alt" loading="lazy" /></button></div>
+            <div class="mosaic-spacer" aria-hidden="true"></div>
+            <div class="mosaic-tile mt-n"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-14.jpg" data-photo-title-key="aboutPhoto14Title" data-photo-alt-key="aboutPhoto14Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto14Aria;title:aboutPhoto14Aria"><img src="Support/Tiles/tile-14.jpg" alt="Foto 14" data-i18n-attr="alt:aboutPhoto14Alt" loading="lazy" /></button></div>
+            <div class="mosaic-tile mt-o"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-09.jpg" data-photo-title-key="aboutPhoto15Title" data-photo-alt-key="aboutPhoto15Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto15Aria;title:aboutPhoto15Aria"><img src="Support/Tiles/tile-09.jpg" alt="Foto 15" data-i18n-attr="alt:aboutPhoto15Alt" loading="lazy" /></button></div>
+            <div class="floating-badge">
+              <div class="badge-number">2024</div>
+              <div class="badge-text" data-i18n="aboutFounded">Fundados</div>
             </div>
-            <div class="mosaic-tile">
-              <button
-                type="button"
-                class="mosaic-fill tile-b about-photo-tile"
-                data-modal="about-photo"
-                data-photo-src="https://placehold.co/900x700/7aa95c/ffffff?text=IMAGEN+DE+SIEMBRA+DE+CUADRILLAS"
-                data-photo-title-key="aboutPhoto2Title"
-                data-photo-alt-key="aboutPhoto2Alt"
-                aria-label="Abrir foto de actividad comunitaria en tamaño completo"
-                data-i18n-attr="aria-label:aboutPhoto2Aria;title:aboutPhoto2Aria"
-              >
-                <img src="https://placehold.co/900x700/7aa95c/ffffff?text=IMAGEN+DE+SIEMBRA+DE+CUADRILLAS" alt="Foto de actividad comunitaria" data-i18n-attr="alt:aboutPhoto2Alt" loading="lazy" />
-              </button>
-            </div>
-            <div class="mosaic-tile">
-              <button
-                type="button"
-                class="mosaic-fill tile-c about-photo-tile"
-                data-modal="about-photo"
-                data-photo-src="https://placehold.co/900x700/4b7a46/ffffff?text=IMAGEN+DE+VECINOS+CON+NUEVAS+PLANTAS"
-                data-photo-title-key="aboutPhoto3Title"
-                data-photo-alt-key="aboutPhoto3Alt"
-                aria-label="Abrir foto de jornada de siembra en tamaño completo"
-                data-i18n-attr="aria-label:aboutPhoto3Aria;title:aboutPhoto3Aria"
-              >
-                <img src="https://placehold.co/900x700/4b7a46/ffffff?text=IMAGEN+DE+VECINOS+CON+NUEVAS+PLANTAS" alt="Foto de jornada de siembra" data-i18n-attr="alt:aboutPhoto3Alt" loading="lazy" />
-              </button>
-            </div>
-          </div>
-          <div class="floating-badge">
-            <div class="badge-number">XXXX</div>
-            <div class="badge-text" data-i18n="aboutFounded">Fundados</div>
           </div>
         </div>
 
@@ -665,6 +665,10 @@
     </div>
   </div>
 
+  <audio id="landingAudio" preload="auto" aria-hidden="true">
+    <source src="Support/General/jingle.mpeg" type="audio/mpeg" />
+  </audio>
+
   <div class="cookie-consent-overlay" id="cookieConsentOverlay" role="dialog" aria-modal="true" aria-labelledby="cookieConsentTitle">
     <div class="cookie-consent-card">
       <h2 id="cookieConsentTitle">Privacidad y cookies</h2>
@@ -686,12 +690,14 @@
   <button type="button" class="cookie-settings-btn" id="cookieSettingsBtn">Privacidad y cookies</button>
 
   <!-- JavaScript modules (load in order) -->
-  <script src="js/translations.js?v=20260602"></script>
-  <script src="js/theme.js?v=20260602"></script>
-  <script src="js/lang.js?v=20260602"></script>
-  <script src="js/modal.js?v=20260602"></script>
-  <script src="js/animations.js?v=20260602"></script>
+
+  <script src="js/translations.js?v=20260529"></script>
+  <script src="js/theme.js?v=20260529"></script>
+  <script src="js/lang.js?v=20260529"></script>
+  <script src="js/modal.js?v=20260529"></script>
+  <script src="js/animations.js?v=20260529"></script>
   <script src="js/app.js?v=20260602"></script>
+
   <script>
     (function () {
       const CONSENT_KEY = 'adla_cookie_consent_v1';

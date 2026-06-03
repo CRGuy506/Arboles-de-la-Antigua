@@ -251,11 +251,15 @@ document.addEventListener('click', (e) => {
 
     // Append a translatable video CTA for the security modal when URL is provided.
     if (modalId === 'chip-security') {
+      const videoEmbedHtml = t.modalSecurityVideoEmbedHtml || fallback.modalSecurityVideoEmbedHtml || '';
       const videoUrl = t.modalSecurityVideoUrl || fallback.modalSecurityVideoUrl || '';
       const videoCta = t.modalSecurityVideoCta || fallback.modalSecurityVideoCta || 'Ver video';
       const isValidVideoUrl = /^https?:\/\//i.test(videoUrl);
+      const hasEmbed = typeof videoEmbedHtml === 'string' && videoEmbedHtml.trim().length > 0;
 
-      if (isValidVideoUrl) {
+      if (hasEmbed) {
+        body += videoEmbedHtml;
+      } else if (isValidVideoUrl) {
         body += `
           <p>
             <a href="${videoUrl}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="display:inline-block;">

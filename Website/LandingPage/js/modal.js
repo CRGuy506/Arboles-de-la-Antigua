@@ -54,14 +54,6 @@ function openModal(config) {
   closeBtn.innerHTML = '×';
   closeBtn.addEventListener('click', closeModal);
 
-  // Create header
-  const header = document.createElement('div');
-  header.className = 'modal-header';
-  const title = document.createElement('h2');
-  title.className = 'modal-title';
-  title.textContent = config.title || '';
-  header.appendChild(title);
-
   // Create body
   const body = document.createElement('div');
   body.className = 'modal-body';
@@ -74,7 +66,15 @@ function openModal(config) {
     modalContent.classList.add(config.modalClass);
   }
   modalContent.appendChild(closeBtn);
-  modalContent.appendChild(header);
+  if (config.title) {
+    const header = document.createElement('div');
+    header.className = 'modal-header';
+    const title = document.createElement('h2');
+    title.className = 'modal-title';
+    title.textContent = config.title;
+    header.appendChild(title);
+    modalContent.appendChild(header);
+  }
   modalContent.appendChild(body);
 
   modalOverlay.classList.add('active');
@@ -207,12 +207,10 @@ document.addEventListener('click', (e) => {
     const t = allTranslations[lang] || fallback;
 
     if (modalId === 'about-photo') {
-      const titleKey = trigger.getAttribute('data-photo-title-key') || '';
       const altKey = trigger.getAttribute('data-photo-alt-key') || '';
       const photoSrc = (trigger.getAttribute('data-photo-src') || '').trim();
 
-      const title = (titleKey && (t[titleKey] || fallback[titleKey])) || '';
-      const alt = (altKey && (t[altKey] || fallback[altKey])) || title || 'Photo';
+      const alt = (altKey && (t[altKey] || fallback[altKey])) || 'Photo';
       const fallbackBody = t.aboutPhotoFallbackBody || fallback.aboutPhotoFallbackBody || '';
 
       let body = fallbackBody;
@@ -226,7 +224,7 @@ document.addEventListener('click', (e) => {
         `;
       }
 
-      openModal({ title, body, modalClass: 'modal-photo-wide' });
+      openModal({ body, modalClass: 'modal-photo-wide' });
       return;
     }
 

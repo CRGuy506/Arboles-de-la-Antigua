@@ -1230,12 +1230,18 @@ a { color: inherit; text-decoration: none; }
 }
 
 .agenda-tag {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-height: 1.85rem;
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 0.15rem 0.6rem;
+  line-height: 1.2;
+  text-align: center;
+  padding: 0.32rem 0.78rem;
   border-radius: var(--r-pill);
   margin-bottom: 0.4rem;
 }
@@ -1559,6 +1565,10 @@ a { color: inherit; text-decoration: none; }
   .agenda-time { text-align: left; padding: 0 0 0.2rem; color: var(--moss); }
   .agenda-dot  { display: none; }
   .agenda-body { margin-left: 0; }
+  .agenda-tag {
+    display: flex;
+    margin-inline: auto;
+  }
 }
 
 @media (max-width: 380px) {

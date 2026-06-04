@@ -156,6 +156,9 @@ a { color: inherit; text-decoration: none; }
   transform: translateY(-1px);
 }
 .audio-fallback-toggle svg { display: block; }
+.audio-fallback-toggle .audio-icon-mute { display: none; }
+.audio-fallback-toggle.audio-show-mute .audio-icon-mute { display: block; }
+.audio-fallback-toggle.audio-show-mute .audio-icon-unmute { display: none; }
 .audio-fallback-toggle[hidden] { display: none; }
 .theme-toggle svg { display: block; }
 /* show correct icon per theme */

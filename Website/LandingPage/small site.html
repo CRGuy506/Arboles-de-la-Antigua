@@ -102,11 +102,16 @@
             hidden
           >
             <span class="sr-only">Reproducir sonido</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-              <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
-              <path d="M18.5 5.5a9 9 0 0 1 0 13"></path>
-            </svg>
+              <svg class="audio-icon-unmute" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
+                <path d="M18.5 5.5a9 9 0 0 1 0 13"></path>
+              </svg>
+              <svg class="audio-icon-mute" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <line x1="21" y1="3" x2="15" y2="9"></line>
+                <line x1="21" y1="9" x2="15" y2="3"></line>
+              </svg>
           </button>
           <button id="themeToggle" class="theme-toggle" aria-label="Cambiar tema" title="Cambiar tema" data-i18n-attr="aria-label:themeToggleAria;title:themeToggleTitle">
             <!-- Moon icon (shown in light mode) -->

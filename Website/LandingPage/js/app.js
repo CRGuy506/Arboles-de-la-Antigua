@@ -17,6 +17,32 @@ const prefersReducedMotionApp = window.matchMedia('(prefers-reduced-motion: redu
 const landingAudioDelayMs = 1200;
 let landingAudioUnlockListenersBound = false;
 
+function updateLandingAudioToggleState() {
+  if (!landingAudio || !landingAudioFallbackToggle) {
+    return;
+  }
+
+  const isPlaying = !landingAudio.paused && !landingAudio.ended;
+  const isMuted = landingAudio.muted || landingAudio.volume === 0;
+  const showMuteIcon = isPlaying && !isMuted;
+
+  landingAudioFallbackToggle.classList.toggle('audio-show-mute', showMuteIcon);
+
+  let label = 'Reproducir sonido';
+  if (showMuteIcon) {
+    label = 'Silenciar audio';
+  } else if (isPlaying && isMuted) {
+    label = 'Activar sonido';
+  }
+  landingAudioFallbackToggle.setAttribute('aria-label', label);
+  landingAudioFallbackToggle.setAttribute('title', label);
+
+  const srOnly = landingAudioFallbackToggle.querySelector('.sr-only');
+  if (srOnly) {
+    srOnly.textContent = label;
+  }
+}
+
 function removeLandingAudioUnlockListeners() {
   if (!landingAudioUnlockListenersBound) {
     return;
@@ -31,6 +57,7 @@ function removeLandingAudioUnlockListeners() {
 function showLandingAudioFallbackToggle() {
   if (landingAudioFallbackToggle) {
     landingAudioFallbackToggle.hidden = false;
+    updateLandingAudioToggleState();
   }
 }
 
@@ -57,13 +84,17 @@ function tryPlayLandingAudio() {
     playAttempt
       .then(() => {
         removeLandingAudioUnlockListeners();
+        updateLandingAudioToggleState();
       })
       .catch(() => {
         showLandingAudioFallbackToggle();
         ensureLandingAudioUnlockListeners();
+        updateLandingAudioToggleState();
       });
     return;
   }
+
+  updateLandingAudioToggleState();
 }
 
 function tryPlayLandingAudioOnInteraction() {
@@ -72,8 +103,26 @@ function tryPlayLandingAudioOnInteraction() {
 
 if (landingAudioFallbackToggle) {
   landingAudioFallbackToggle.addEventListener('click', () => {
-    tryPlayLandingAudio();
+    if (!landingAudio) {
+      return;
+    }
+
+    if (landingAudio.paused) {
+      landingAudio.muted = false;
+      tryPlayLandingAudio();
+      return;
+    }
+
+    landingAudio.muted = !landingAudio.muted;
+    updateLandingAudioToggleState();
   });
+}
+
+if (landingAudio) {
+  landingAudio.addEventListener('play', updateLandingAudioToggleState);
+  landingAudio.addEventListener('pause', updateLandingAudioToggleState);
+  landingAudio.addEventListener('ended', updateLandingAudioToggleState);
+  landingAudio.addEventListener('volumechange', updateLandingAudioToggleState);
 }
 
 function closeMobileMenu() {

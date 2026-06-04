@@ -257,7 +257,8 @@
             data-i18n-attr="aria-label:joinChatAria"
           >
             <span data-i18n="navCta">Inscríbete</span>
-            <img src="Support/General/WA.ico" alt="" aria-hidden="true" class="cta-wa-icon" />
+            <img src="Support/General/WA.ico" alt="" aria-hidden="true" class="cta-wa-icon" onerror="this.hidden=true; if (this.nextElementSibling) this.nextElementSibling.hidden=false;" />
+            <span class="cta-wa-fallback" hidden aria-hidden="true">WA</span>
           </button>
         </div>
       </div>

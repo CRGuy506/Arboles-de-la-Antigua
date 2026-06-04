@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Árboles de la Antigua</title>
+  <link rel="icon" type="image/x-icon" href="Support/General/adla.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -47,7 +48,7 @@
         <nav class="main-nav" id="mainNav" aria-label="Navegación principal" data-i18n-attr="aria-label:navMainAria">
           <ul class="nav-links">
             <li><a href="#nosotros" data-i18n="navAbout">Nosotros</a></li>
-            <li><a href="#evento" data-i18n="navEvent">Evento</a></li>
+            <li><a href="#evento" data-i18n="navTreeDay2026">Día del Árbol 2026</a></li>
             <li><a href="#agenda" data-i18n="navAgenda">Agenda</a></li>
           </ul>
         </nav>
@@ -131,11 +132,11 @@
             type="button"
             class="btn-cta-sm"
             data-modal="join-whatsapp"
-            data-i18n="navCta"
             aria-label="Abrir información de ingreso al chat"
             data-i18n-attr="aria-label:joinChatAria"
           >
-            Inscríbete →
+            <span data-i18n="navCta">Inscríbete</span>
+            <img src="Support/General/WA.ico" alt="" aria-hidden="true" class="cta-wa-icon" />
           </button>
         </div>
       </div>
@@ -181,7 +182,7 @@
         <div class="hero-visual float-anim" aria-hidden="true">
           <div class="hero-card">
             <div class="hero-card-title" data-i18n="heroCardTitle">Patrimonio verde vivo</div>
-            <div class="hero-card-sub" data-i18n="heroCardSub">Residencial La Antigua, La Unión, Cartago</div>
+            <div class="hero-card-sub" data-i18n="heroCardSub">Residencial La Antigua, La Unión, Cartago, Costa Rica.</div>
             <div class="stat-row">
               <div class="stat-box has-detail" tabindex="0">
                 <div class="stat-number">62</div>
@@ -263,10 +264,17 @@
             <div class="mosaic-spacer" aria-hidden="true"></div>
             <div class="mosaic-tile mt-n"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-14.jpg" data-photo-title-key="aboutPhoto14Title" data-photo-alt-key="aboutPhoto14Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto14Aria;title:aboutPhoto14Aria"><img src="Support/Tiles/tile-14.jpg" alt="Foto 14" data-i18n-attr="alt:aboutPhoto14Alt" loading="lazy" /></button></div>
             <div class="mosaic-tile mt-o"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-09.jpg" data-photo-title-key="aboutPhoto15Title" data-photo-alt-key="aboutPhoto15Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto15Aria;title:aboutPhoto15Aria"><img src="Support/Tiles/tile-09.jpg" alt="Foto 15" data-i18n-attr="alt:aboutPhoto15Alt" loading="lazy" /></button></div>
-          </div>
-          <div class="floating-badge">
-            <div class="badge-number">2024</div>
-            <div class="badge-text" data-i18n="aboutFounded">Fundados</div>
+            <div class="mosaic-tile mt-p">
+              <button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-16.jpg" data-photo-title-key="aboutPhoto16Title" data-photo-alt-key="aboutPhoto16Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto16Aria;title:aboutPhoto16Aria">
+                <img src="Support/Tiles/tile-16.jpg" alt="Foto 16" data-i18n-attr="alt:aboutPhoto16Alt" loading="lazy" />
+              </button>
+            </div>
+            <div class="mosaic-tile mt-q">
+              <div class="floating-badge" aria-hidden="true">
+                <div class="badge-number">2024</div>
+                <div class="badge-text" data-i18n="aboutFounded">Fundados</div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -280,10 +288,10 @@
             Árboles de La Antigua es una iniciativa vecinal voluntaria enfocada en promover y maximizar los beneficios de los árboles y arbustos urbanos dentro del residencial.
           </p>
           <p class="about-body" data-i18n="aboutBody2">
-            Trabajamos de forma organizada entre vecinos para sembrar, mantener y proteger el arbolado urbano, mejorando la calidad de vida de la comunidad mediante espacios más frescos, verdes y activos.
+            Trabajamos de forma organizada entre vecinos para sembrar, mantener y proteger el arbolado urbano, mejorando la calidad de vida de la comunidad mediante espacios más frescos, verdes y seguros.
           </p>
           <p class="about-body" data-i18n="aboutBody3">
-            Nuestro enfoque combina acción comunitaria, coordinación con la municipalidad y buenas prácticas para asegurar que el crecimiento del arbolado sea sostenible a largo plazo.
+            Nuestro enfoque combina acción comunitaria, coordinación con la Municipalidad de la Unión y buenas prácticas para asegurar que el crecimiento del arbolado sea sostenible a largo plazo.
           </p>
 
           <p class="about-chip-hint" data-i18n="aboutChipsHint">
@@ -410,6 +418,17 @@
             >
               Ver agenda visual
             </button>
+            <a
+              href="https://www.mundiario.com/articulo/costa-rica/costa-rica-celebra-dia-arbol/20230615171619271551.html"
+              class="btn-ghost"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-i18n="eventLearnMoreCta"
+              aria-label="Abrir nota sobre el Dia del Arbol en una pestana nueva"
+              data-i18n-attr="aria-label:eventLearnMoreAria"
+            >
+              Conozca mas
+            </a>
           </div>
 
         </div>
@@ -545,6 +564,10 @@
         <div class="footer-copy">
           <div><span data-i18n="footerCopyright">© 2026</span> Árboles de la Antigua</div>
           <div data-i18n="footerCopy2">Todos los derechos reservados</div>
+          <div>
+            WhatsApp icon by SimpleIcon on
+            <a href="https://icon-icons.com/authors/235-simpleicon">Icon-Icons.com</a>
+          </div>
         </div>
       </div>
     </div>

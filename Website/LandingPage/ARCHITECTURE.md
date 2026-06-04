@@ -1,78 +1,85 @@
 # LandingPage Architecture
 
 This document is the living architecture map for the `Website/LandingPage` workspace.
-Update it whenever structure, dependencies, runtime behavior, or tracking/privacy behavior changes.
+Update it whenever structure, dependencies, runtime behavior, accessibility, or privacy behavior changes.
 
 ## System Diagram
 
 ```mermaid
 graph TD
-  A[small site.html] --> B[styles/main.css]
-  A --> C[js/translations.js]
-  A --> D[js/theme.js]
-  A --> E[js/lang.js]
-  A --> F[js/modal.js]
-  A --> G[js/animations.js]
-  A --> H[js/app.js]
+  IDX[index.html] --> SS[small site.html]
+  IDXGA[index-GA.html] --> SSGA[small site + GA.html]
 
-  AGA[small site + GA.html] --> B
-  AGA --> C
-  AGA --> D
-  AGA --> E
-  AGA --> F
-  AGA --> G
-  AGA --> H
+  SS --> CSS[styles/main.css]
+  SS --> TR[js/translations.js]
+  SS --> TH[js/theme.js]
+  SS --> LG[js/lang.js]
+  SS --> MD[js/modal.js]
+  SS --> AN[js/animations.js]
+  SS --> APP[js/app.js]
 
-  AGA --> GAI[gtag.js GA4 loader]
-  AGA --> GAC[inline consent-mode config]
-  AGA --> CCUI[cookie consent overlay + settings button]
-  AGA --> CCL[cookie consent controller]
+  SSGA --> CSS
+  SSGA --> TR
+  SSGA --> TH
+  SSGA --> LG
+  SSGA --> MD
+  SSGA --> AN
+  SSGA --> APP
 
-  C --> E
-  C --> F
+  SSGA --> GAI[gtag.js loader]
+  SSGA --> GAD[consent default denied]
+  SSGA --> GACC[cookie consent controller]
+  SSGA --> GAF[footer privacy pill]
 
-  D --> THEME[data-theme on html]
-  D --> LST[localStorage adla-theme]
+  TH --> THEME[data-theme on html]
+  TH --> LST[localStorage adla-theme]
 
-  E --> I18N[data-i18n/data-i18n-html/data-i18n-attr]
-  E --> LSL[localStorage adla-lang]
+  LG --> I18N[data-i18n/data-i18n-html/data-i18n-attr]
+  LG --> LSL[localStorage adla-lang]
 
-  F --> MOD[modal overlay/content]
-  F --> MROUTES[data-modal routing]
-  F --> ABOUTPHOTO[about-photo modal from tile metadata]
-  F --> JOIN[join-whatsapp modal with QR + CTA]
-  F --> EVENTIMG[event-info/event-agenda image append]
+  MD --> MOD[modal overlay/content]
+  MD --> MROUTES[data-modal routing]
 
-  G --> NAVSCROLLED[navbar scrolled class]
-  G --> AGREVEAL[agenda observer reveal]
+  AN --> NAVSCROLLED[navbar scrolled class]
+  AN --> AGREVEAL[agenda observer reveal]
 
-  H --> NAVMOB[mobile menu behavior]
-  H --> ANCHORSMOOTH[smooth in-page anchor scroll]
+  APP --> NAVMOB[mobile menu behavior]
+  APP --> ANCHORSMOOTH[smooth in-page anchor scroll]
+  APP --> AUDIOCTL[landing audio unlock + fallback control]
+  APP --> MOSAICSYNC[about mosaic sync on load/resize]
 
-  ASSETREF[HTML and translation paths use Support/General/* and Support/Tiles/*] --> CONSTRAINT[Keep runtime paths aligned with Support subfolders]
+  ASSETREF[Support/General/* and Support/Tiles/* paths] --> CONSTRAINT[Keep HTML, CSS, and translations aligned with real asset paths]
 ```
 
 ## Directory Snapshot
 
-- `small site.html`: Main landing page (no analytics consent layer).
-- `small site + GA.html`: Landing page variant with GA4 + consent-mode + cookie consent UI.
+- `index.html`: non-GA bootstrap entrypoint redirecting to `small site.html`.
+- `index-GA.html`: GA bootstrap entrypoint redirecting to `small site + GA.html`.
+- `small site.html`: primary landing variant without analytics consent logic.
+- `small site + GA.html`: landing variant with GA4 consent-mode and privacy UI.
+- `styles/main.css`: shared visual system, component styling, and responsive layout.
 - `js/translations.js`: `window.ADLA_TRANSLATIONS` dictionaries (`es`, `en`, `fr`).
-- `translations_backup_corrupted.js`: Historical backup, not loaded by either HTML entrypoint.
-- `styles/main.css`: Global visual system and responsive behavior.
-- `js/theme.js`: Theme persistence + toggle.
-- `js/lang.js`: i18n binding + language picker behavior.
-- `js/modal.js`: Modal system and all `data-modal` routes.
-- `js/animations.js`: Navbar scroll style + agenda reveal animation.
-- `js/app.js`: Mobile nav behavior + smooth anchor scrolling.
-- `agenda.txt`: Agenda source notes/reference.
-- `test-translations.html`: Manual translation testing page.
-- `Support/General/`: shared site assets (`Agenda.jpeg`, `Info.jpg`, `logoADLA.JPG`, `qrWA.jpg`, `Hero.jpg`, audio, and related media).
-- `Support/Tiles/`: photo tile library for About section imagery.
+- `js/theme.js`: theme persistence and toggle behavior (`data-theme`, `adla-theme`).
+- `js/lang.js`: i18n binding and language picker behavior (`adla-lang`).
+- `js/modal.js`: modal runtime and `data-modal` route handling.
+- `js/animations.js`: navbar scroll-state behavior and agenda reveal animation.
+- `js/app.js`: mobile nav, smooth anchors, landing audio handling, and about mosaic sync logic.
+- `Support/General/`: shared assets (logos, hero image, QR, info/agenda media, icons, audio).
+- `Support/Tiles/`: local photo tile set used by the About mosaic.
+- `translations_backup_corrupted.js`, `test-translations.html`, `agenda.txt`: reference/QA artifacts not loaded by production entrypoints.
 
-## Entry Points
+## Entry Points and Load Order
+
+- `index.html`
+  - Redirect bootstrap to `small site.html`.
+  - Used as default non-GA index route.
+
+- `index-GA.html`
+  - Redirect bootstrap to `small site + GA.html`.
+  - Provides explicit GA-enabled index route.
 
 - `small site.html`
-  - Loads the shared CSS and JS stack in this order:
+  - Loads shared stack in this order:
     1. `js/translations.js`
     2. `js/theme.js`
     3. `js/lang.js`
@@ -81,31 +88,31 @@ graph TD
     6. `js/app.js`
 
 - `small site + GA.html`
-  - Loads the same stack as `small site.html`.
-  - Adds inline CSS and JS for consent UI.
-  - Adds GA4 script and consent-mode defaults before runtime scripts.
+  - Loads the same shared stack.
+  - Adds inline consent UI styles and inline consent controller script.
+  - Loads GA4 and sets consent-mode defaults before runtime modules.
 
 ## Core Runtime Behavior
 
-1. `js/translations.js` defines `window.ADLA_TRANSLATIONS`.
-2. `theme.js` resolves `adla-theme` from localStorage (or OS preference fallback) and writes `data-theme`.
-3. `lang.js` applies locale text/HTML/attribute translations and persists `adla-lang`.
-4. `modal.js` handles all `data-modal` triggers, builds modal DOM dynamically, and locks scroll safely.
-5. `animations.js` applies navbar scroll state and reveals agenda items with intersection observer.
-6. `app.js` controls mobile nav open/close and smooth in-page anchor navigation.
+1. `js/translations.js` defines locale dictionaries and content keys.
+2. `js/theme.js` resolves persisted theme (or OS preference fallback), then writes `data-theme`.
+3. `js/lang.js` applies translated text/HTML/attributes and persists selected language.
+4. `js/modal.js` builds modal DOM dynamically for each open and handles all modal routes.
+5. `js/animations.js` applies navbar scrolled state and agenda-item reveal animations.
+6. `js/app.js` handles mobile menu, smooth anchor scroll, landing audio replay UX, and about mosaic synchronization.
 
 ## About Section Architecture
 
-- Left column uses a 3-tile mosaic layout.
-- Each tile is a button with `data-modal="about-photo"` and metadata:
+- About visual uses a local tile mosaic driven by `Support/Tiles/*.jpg` assets.
+- Each photo tile uses `data-modal="about-photo"` plus metadata:
   - `data-photo-src`
   - `data-photo-title-key`
   - `data-photo-alt-key`
-- `modal.js` resolves localized title/alt from `js/translations.js` and opens an enlarged image modal.
-- Current tile sources are external placeholder URLs (text-labeled placeholders).
-- About badge year is intentionally placeholder text: `XXXX`.
+- `modal.js` resolves localized title/alt and opens image lightbox modal.
+- Mosaic includes `tile-16.jpg` and an in-grid floating badge tile (`Fundados 2024`).
+- Mobile layout uses compact multi-column mosaic behavior rather than stacked single-column placeholders.
 
-## Modal Routes (data-modal)
+## Modal Routes (`data-modal`)
 
 Current routed modal IDs in `js/modal.js`:
 
@@ -122,61 +129,66 @@ Current routed modal IDs in `js/modal.js`:
 
 Behavior highlights:
 
-- `join-whatsapp`: localized title/body + QR image + CTA link.
-- `chip-security`: optional translatable video CTA when URL exists.
-- `event-info` and `event-agenda`: append translatable image when URL exists.
-- All modal content is rebuilt every open; direct listeners on inner modal nodes are not persistent.
+- `join-whatsapp`: localized body + QR + CTA.
+- `chip-security`: optional translated video embed/CTA handling.
+- `event-info` and `event-agenda`: append translated image assets when URLs are present.
+- Modal content is rebuilt each open; ephemeral listeners are reattached on each render.
 
 ## Analytics and Consent (`small site + GA.html` only)
 
-- GA4 script present with placeholder Measurement ID: `G-XXXXXXXXXX`.
-- Consent-mode default is privacy-first denied:
+- GA4 script present with placeholder Measurement ID `G-XXXXXXXXXX`.
+- Consent defaults are privacy-first denied:
   - `analytics_storage: denied`
   - `ad_storage: denied`
   - `ad_user_data: denied`
   - `ad_personalization: denied`
-- Minimal tracking settings configured:
+- Minimal analytics settings:
   - `anonymize_ip: true`
   - `allow_google_signals: false`
   - `allow_ad_personalization_signals: false`
-  - `send_page_view: false` until consent accepted
-- Cookie consent overlay appears when no saved choice exists.
-- Choice persisted in `localStorage` key `adla_cookie_consent_v1` with values:
-  - `accepted`
-  - `rejected`
-- A persistent "Privacidad y cookies" button reopens consent settings.
+  - `send_page_view: false` until consent is accepted
+- Consent is stored in `localStorage` key `adla_cookie_consent_v1` as JSON:
+  - `{ value: 'accepted' | 'rejected', updatedAt: <epoch-ms> }`
+- Consent expiry policy is 180 days (`CONSENT_MAX_AGE_DAYS = 180`).
+- Expired or legacy string-only records are treated as stale and re-prompt users.
+- Privacy modal displays a "Ultima actualizacion del consentimiento" timestamp line.
+- A compact footer "Privacidad y cookies" pill reopens the consent modal.
 
 ## i18n Coverage Notes
 
-- Locale dictionaries are complete across `es`, `en`, `fr` for active UI keys, including:
-  - Join-chat modal copy/URLs
-  - About extra sections (`aboutOrg*`, `aboutMunicipal*`)
+- Locale dictionaries (`es`, `en`, `fr`) cover active keys, including:
+  - Updated nav/event keying (`navTreeDay2026`)
+  - Event "learn more" CTA keys (`eventLearnMoreCta`, `eventLearnMoreAria`)
+  - Expanded modal body content and references
   - About photo modal labels (`aboutPhoto*`)
-  - Event and agenda keys
-- Agenda speaker keys `agendaSpeaker7` and `agendaSpeaker8` are comma-separated lists.
+- Keep both HTML variants aligned on shared i18n keys and `data-i18n*` attributes.
+
+## Styling Notes (Recent)
+
+- Theme toggle and audio fallback toggle are color-harmonized in navbar controls.
+- Agenda tag contrast is theme-aware; dark mode includes explicit tag overrides for readability.
+- Event action buttons and about mosaic received responsive refinements for narrow screens.
 
 ## Known Constraints and Risks
 
-- Asset path coordination risk:
-  - Active HTML and translation values must stay aligned with `Support/General/...` and `Support/Tiles/...` paths.
-  - If assets are reorganized again, stale paths can break logos/QR/event media.
+- Branch variant drift risk:
+  - `small site.html` and `small site + GA.html` must stay structurally in sync except GA/privacy-specific code.
 
-- Placeholder dependencies:
-  - About tile images currently use external placeholder URLs.
-  - Production should replace with final project-controlled media URLs.
+- Asset path coupling:
+  - Changes to `Support/General/*` and `Support/Tiles/*` names/locations require synchronized updates in HTML, CSS, and translations.
 
 - Measurement ID placeholder:
-  - `small site + GA.html` will not report analytics until `G-XXXXXXXXXX` is replaced.
+  - Analytics remains non-production until `G-XXXXXXXXXX` is replaced.
 
-- Duplicate variant maintenance:
-  - `small site.html` and `small site + GA.html` can diverge if edits are not applied to both when intended.
+- Consent storage dependency:
+  - Privacy behavior depends on browser storage availability; restricted/private contexts can reduce persistence guarantees.
 
 ## Non-Production/Reference Files
 
 - `translations_backup_corrupted.js`: historical backup, excluded from runtime.
-- `test-translations.html`: QA utility page, not part of main runtime path.
-- `agenda.txt`: source notes; no direct runtime dependency.
-- `Extras/Infra-doc.md`, `Extras/TS-guide.md`: documentation/reference assets.
+- `test-translations.html`: QA helper, not part of production runtime path.
+- `agenda.txt`: source notes, no direct runtime dependency.
+- `Extras/Infra-doc.md`, `Extras/TS-guide.md`: documentation assets.
 
 ## Update Checklist
 
@@ -184,11 +196,11 @@ When behavior changes, update this file and include:
 
 1. Diagram node/edge changes.
 2. Updated file responsibilities.
-3. Updated runtime flow if load order or state changes.
-4. New/changed localStorage keys.
-5. New modal IDs or translation key groups.
-6. New privacy/analytics behavior details.
+3. Updated load order and runtime state transitions.
+4. New/changed storage keys and expiry behavior.
+5. New/changed modal IDs or translation key groups.
+6. Privacy and analytics UX changes.
 
 ## Last Updated
 
-- 2026-05-31: Full refresh after About photo-tile modal integration, translations expansion, comma-separated agenda speaker updates, `small site + GA.html` creation, GA4 consent-mode defaults, mandatory cookie consent popup, and privacy-settings reopen control.
+- 2026-06-03: Refreshed for index/index-GA bootstrap routing, tile-16 and mosaic updates, i18n/nav key changes, CTA/icon updates, consent timestamp + 180-day expiry model, privacy modal last-updated line, footer privacy pill placement, and theme/dark-mode contrast refinements.

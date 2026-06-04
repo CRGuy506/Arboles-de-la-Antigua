@@ -60,6 +60,13 @@
       justify-content: center;
     }
 
+    .cookie-consent-meta {
+      margin-top: 0.8rem;
+      font-size: 0.83rem;
+      color: #4a5d50;
+      text-align: center;
+    }
+
     .cookie-btn {
       border: 1px solid #87a28f;
       border-radius: 999px;
@@ -77,19 +84,28 @@
     }
 
     .cookie-settings-btn {
-      position: fixed;
-      left: 14px;
-      bottom: 14px;
-      z-index: 11000;
       border: 1px solid #87a28f;
       background: #ffffff;
       color: #1f2a22;
       border-radius: 999px;
-      padding: 0.45rem 0.8rem;
+      padding: 0.3rem 0.65rem;
       font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16);
+      line-height: 1.2;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .cookie-settings-btn:hover,
+    .cookie-settings-btn:focus-visible {
+      background: #f0f5f1;
+      border-color: #4b7a46;
+      outline: none;
+    }
+
+    .cookie-settings-wrap {
+      margin-top: 0.55rem;
     }
   </style>
   <!-- Google Analytics 4 (replace G-XXXXXXXXXX with your measurement ID) -->
@@ -153,7 +169,7 @@
         <nav class="main-nav" id="mainNav" aria-label="Navegación principal" data-i18n-attr="aria-label:navMainAria">
           <ul class="nav-links">
             <li><a href="#nosotros" data-i18n="navAbout">Nosotros</a></li>
-            <li><a href="#evento" data-i18n="navEvent">Evento</a></li>
+            <li><a href="#evento" data-i18n="navTreeDay2026">Día del Árbol 2026</a></li>
             <li><a href="#agenda" data-i18n="navAgenda">Agenda</a></li>
           </ul>
         </nav>
@@ -237,11 +253,11 @@
             type="button"
             class="btn-cta-sm"
             data-modal="join-whatsapp"
-            data-i18n="navCta"
             aria-label="Abrir información de ingreso al chat"
             data-i18n-attr="aria-label:joinChatAria"
           >
-            Inscríbete →
+            <span data-i18n="navCta">Inscríbete</span>
+            <img src="Support/General/WA.ico" alt="" aria-hidden="true" class="cta-wa-icon" />
           </button>
         </div>
       </div>
@@ -287,7 +303,7 @@
         <div class="hero-visual float-anim" aria-hidden="true">
           <div class="hero-card">
             <div class="hero-card-title" data-i18n="heroCardTitle">Patrimonio verde vivo</div>
-            <div class="hero-card-sub" data-i18n="heroCardSub">Residencial La Antigua, La Unión, Cartago</div>
+            <div class="hero-card-sub" data-i18n="heroCardSub">Residencial La Antigua, La Unión, Cartago, Costa Rica.</div>
             <div class="stat-row">
               <div class="stat-box has-detail" tabindex="0">
                 <div class="stat-number">62</div>
@@ -369,10 +385,17 @@
             <div class="mosaic-spacer" aria-hidden="true"></div>
             <div class="mosaic-tile mt-n"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-14.jpg" data-photo-title-key="aboutPhoto14Title" data-photo-alt-key="aboutPhoto14Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto14Aria;title:aboutPhoto14Aria"><img src="Support/Tiles/tile-14.jpg" alt="Foto 14" data-i18n-attr="alt:aboutPhoto14Alt" loading="lazy" /></button></div>
             <div class="mosaic-tile mt-o"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-09.jpg" data-photo-title-key="aboutPhoto15Title" data-photo-alt-key="aboutPhoto15Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto15Aria;title:aboutPhoto15Aria"><img src="Support/Tiles/tile-09.jpg" alt="Foto 15" data-i18n-attr="alt:aboutPhoto15Alt" loading="lazy" /></button></div>
-          </div>
-          <div class="floating-badge">
-            <div class="badge-number">2024</div>
-            <div class="badge-text" data-i18n="aboutFounded">Fundados</div>
+            <div class="mosaic-tile mt-p">
+              <button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-16.jpg" data-photo-title-key="aboutPhoto16Title" data-photo-alt-key="aboutPhoto16Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto16Aria;title:aboutPhoto16Aria">
+                <img src="Support/Tiles/tile-16.jpg" alt="Foto 16" data-i18n-attr="alt:aboutPhoto16Alt" loading="lazy" />
+              </button>
+            </div>
+            <div class="mosaic-tile mt-q">
+              <div class="floating-badge" aria-hidden="true">
+                <div class="badge-number">2024</div>
+                <div class="badge-text" data-i18n="aboutFounded">Fundados</div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -389,7 +412,7 @@
             Trabajamos de forma organizada entre vecinos para sembrar, mantener y proteger el arbolado urbano, mejorando la calidad de vida de la comunidad mediante espacios más frescos, verdes y activos.
           </p>
           <p class="about-body" data-i18n="aboutBody3">
-            Nuestro enfoque combina acción comunitaria, coordinación con la municipalidad y buenas prácticas para asegurar que el crecimiento del arbolado sea sostenible a largo plazo.
+            Nuestro enfoque combina acción comunitaria, coordinación con la Municipalidad de la Unión y buenas prácticas para asegurar que el crecimiento del arbolado sea sostenible a largo plazo.
           </p>
 
           <p class="about-chip-hint" data-i18n="aboutChipsHint">
@@ -516,6 +539,17 @@
             >
               Ver agenda visual
             </button>
+            <a
+              href="https://www.mundiario.com/articulo/costa-rica/costa-rica-celebra-dia-arbol/20230615171619271551.html"
+              class="btn-ghost"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-i18n="eventLearnMoreCta"
+              aria-label="Abrir nota sobre el Dia del Arbol en una pestana nueva"
+              data-i18n-attr="aria-label:eventLearnMoreAria"
+            >
+              Conozca mas
+            </a>
           </div>
 
         </div>
@@ -651,6 +685,13 @@
         <div class="footer-copy">
           <div><span data-i18n="footerCopyright">© 2026</span> Árboles de la Antigua</div>
           <div data-i18n="footerCopy2">Todos los derechos reservados</div>
+          <div>
+            WhatsApp icon by SimpleIcon on
+            <a href="https://icon-icons.com/authors/235-simpleicon">Icon-Icons.com</a>
+          </div>
+          <div class="cookie-settings-wrap">
+            <button type="button" class="cookie-settings-btn" id="cookieSettingsBtn" hidden>Privacidad y cookies</button>
+          </div>
         </div>
       </div>
     </div>
@@ -669,7 +710,7 @@
     <source src="Support/General/jingle.mpeg" type="audio/mpeg" />
   </audio>
 
-  <div class="cookie-consent-overlay" id="cookieConsentOverlay" role="dialog" aria-modal="true" aria-labelledby="cookieConsentTitle">
+  <div class="cookie-consent-overlay" id="cookieConsentOverlay" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="cookieConsentTitle">
     <div class="cookie-consent-card">
       <h2 id="cookieConsentTitle">Privacidad y cookies</h2>
       <p>Usamos una medicion minima para mejorar el sitio. Puede aceptar o rechazar este seguimiento.</p>
@@ -681,14 +722,13 @@
       <p>Estos datos nos ayudan a entender que temas consulta mas la comunidad y en que momentos hay mas interes.</p>
       <p>Con eso podemos priorizar mejor necesidades de infraestructura verde, mantenimiento y organizacion comunitaria.</p>
       <p>Las funciones basicas del sitio siguen funcionando aunque rechace.</p>
+      <p class="cookie-consent-meta" id="cookieConsentMeta">Ultima actualizacion del consentimiento: aun no registrada.</p>
       <div class="cookie-consent-actions">
         <button type="button" class="cookie-btn cookie-btn-primary" id="cookieAcceptBtn">Aceptar analitica minima</button>
         <button type="button" class="cookie-btn" id="cookieRejectBtn">Rechazar analitica</button>
       </div>
     </div>
   </div>
-  <button type="button" class="cookie-settings-btn" id="cookieSettingsBtn">Privacidad y cookies</button>
-
   <!-- JavaScript modules (load in order) -->
 
   <script src="js/translations.js?v=20260603-2"></script>
@@ -701,10 +741,69 @@
   <script>
     (function () {
       const CONSENT_KEY = 'adla_cookie_consent_v1';
+      const CONSENT_MAX_AGE_DAYS = 180;
+      const CONSENT_MAX_AGE_MS = CONSENT_MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
       const overlay = document.getElementById('cookieConsentOverlay');
       const acceptBtn = document.getElementById('cookieAcceptBtn');
       const rejectBtn = document.getElementById('cookieRejectBtn');
       const settingsBtn = document.getElementById('cookieSettingsBtn');
+      const consentMeta = document.getElementById('cookieConsentMeta');
+
+      function readStoredConsent() {
+        let raw = null;
+        try {
+          raw = localStorage.getItem(CONSENT_KEY);
+        } catch (error) {
+          return null;
+        }
+
+        if (!raw) {
+          return null;
+        }
+
+        if (raw === 'accepted' || raw === 'rejected') {
+          return { value: raw, updatedAt: 0 };
+        }
+
+        try {
+          const parsed = JSON.parse(raw);
+          if (!parsed || (parsed.value !== 'accepted' && parsed.value !== 'rejected')) {
+            return null;
+          }
+          return {
+            value: parsed.value,
+            updatedAt: Number(parsed.updatedAt) || 0
+          };
+        } catch (error) {
+          return null;
+        }
+      }
+
+      function saveConsent(consentValue) {
+        try {
+          localStorage.setItem(CONSENT_KEY, JSON.stringify({
+            value: consentValue,
+            updatedAt: Date.now()
+          }));
+        } catch (error) {
+          // Ignore storage write failures in restricted browsing contexts.
+        }
+      }
+
+      function clearConsent() {
+        try {
+          localStorage.removeItem(CONSENT_KEY);
+        } catch (error) {
+          // Ignore storage delete failures in restricted browsing contexts.
+        }
+      }
+
+      function isConsentExpired(consentRecord) {
+        if (!consentRecord || !consentRecord.updatedAt) {
+          return true;
+        }
+        return (Date.now() - consentRecord.updatedAt) > CONSENT_MAX_AGE_MS;
+      }
 
       function applyConsent(consentValue) {
         if (consentValue === 'accepted') {
@@ -736,24 +835,66 @@
         overlay.setAttribute('aria-hidden', 'true');
       }
 
-      const saved = localStorage.getItem(CONSENT_KEY);
-      if (saved === 'accepted' || saved === 'rejected') {
-        applyConsent(saved);
+      function showSettingsPill() {
+        settingsBtn.hidden = false;
+      }
+
+      function formatConsentDate(timestampMs) {
+        if (!timestampMs) {
+          return 'aun no registrada';
+        }
+
+        const date = new Date(timestampMs);
+        if (Number.isNaN(date.getTime())) {
+          return 'aun no registrada';
+        }
+
+        return date.toLocaleString('es-CR', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
+
+      function refreshConsentMeta(consentRecord) {
+        if (!consentMeta) {
+          return;
+        }
+
+        const label = formatConsentDate(consentRecord && consentRecord.updatedAt);
+        consentMeta.textContent = 'Ultima actualizacion del consentimiento: ' + label + '.';
+      }
+
+      settingsBtn.hidden = true;
+
+      const saved = readStoredConsent();
+      refreshConsentMeta(saved);
+      if (saved && !isConsentExpired(saved)) {
+        applyConsent(saved.value);
         hideConsent();
+        showSettingsPill();
       } else {
+        clearConsent();
+        refreshConsentMeta(null);
         showConsent();
       }
 
       acceptBtn.addEventListener('click', function () {
-        localStorage.setItem(CONSENT_KEY, 'accepted');
+        saveConsent('accepted');
+        refreshConsentMeta(readStoredConsent());
         applyConsent('accepted');
         hideConsent();
+        showSettingsPill();
       });
 
       rejectBtn.addEventListener('click', function () {
-        localStorage.setItem(CONSENT_KEY, 'rejected');
+        saveConsent('rejected');
+        refreshConsentMeta(readStoredConsent());
         applyConsent('rejected');
         hideConsent();
+        showSettingsPill();
       });
 
       settingsBtn.addEventListener('click', function () {

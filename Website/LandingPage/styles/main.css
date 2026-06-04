@@ -393,6 +393,12 @@ a { color: inherit; text-decoration: none; }
   transition: background 0.18s, color 0.18s;
   color: color-mix(in srgb, var(--bark) 70%, transparent);
 }
+
+/* Keep the Tree Day nav label on a single line across locales. */
+.nav-links a[href="#evento"] {
+  white-space: nowrap;
+}
+
 .nav-links a:hover {
   background: color-mix(in srgb, var(--moss) 10%, transparent);
   color: var(--moss);
@@ -883,10 +889,16 @@ a { color: inherit; text-decoration: none; }
 
 @media (max-width: 640px) {
   .about-mosaic {
-    column-count: 2;
+    column-count: 3;
+    column-gap: 8px;
+    padding: 0 0 64px 0;
     height: auto;
     transform: none;
     width: 100%;
+  }
+
+  .mosaic-tile {
+    margin: 0 0 8px;
   }
 
   .mosaic-spacer {
@@ -896,7 +908,12 @@ a { color: inherit; text-decoration: none; }
 
 @media (max-width: 460px) {
   .about-mosaic {
-    column-count: 1;
+    column-count: 3;
+    column-gap: 6px;
+  }
+
+  .mosaic-tile {
+    margin: 0 0 6px;
   }
 }
 
@@ -927,8 +944,6 @@ a { color: inherit; text-decoration: none; }
   opacity: 0.85;
   margin-top: 0.2rem;
 }
-
-.about-content { }
 
 .about-heading {
   font-family: 'Playfair Display', serif;
@@ -1440,7 +1455,8 @@ a { color: inherit; text-decoration: none; }
     margin-top: 1.25rem;
   }
 
-  .about-visual { order: -1; }
+  .about-content { order: 1; }
+  .about-visual { order: 2; }
 
   .floating-badge {
     display: block;

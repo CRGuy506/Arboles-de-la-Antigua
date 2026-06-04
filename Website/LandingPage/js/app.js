@@ -15,24 +15,7 @@ const landingAudio = document.getElementById('landingAudio');
 const landingAudioFallbackToggle = document.getElementById('landingAudioFallbackToggle');
 const prefersReducedMotionApp = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const landingAudioDelayMs = 1200;
-const landingAudioSessionKey = 'adla-landing-audio-played';
 let landingAudioUnlockListenersBound = false;
-
-function markLandingAudioPlayed() {
-  try {
-    sessionStorage.setItem(landingAudioSessionKey, 'true');
-  } catch (error) {
-    // Ignore storage access failures in hardened/private browsing contexts.
-  }
-}
-
-function hasPlayedLandingAudio() {
-  try {
-    return sessionStorage.getItem(landingAudioSessionKey) === 'true';
-  } catch (error) {
-    return false;
-  }
-}
 
 function removeLandingAudioUnlockListeners() {
   if (!landingAudioUnlockListenersBound) {
@@ -51,12 +34,6 @@ function showLandingAudioFallbackToggle() {
   }
 }
 
-function hideLandingAudioFallbackToggle() {
-  if (landingAudioFallbackToggle) {
-    landingAudioFallbackToggle.hidden = true;
-  }
-}
-
 function ensureLandingAudioUnlockListeners() {
   if (landingAudioUnlockListenersBound) {
     return;
@@ -69,8 +46,7 @@ function ensureLandingAudioUnlockListeners() {
 }
 
 function tryPlayLandingAudio() {
-  if (!landingAudio || hasPlayedLandingAudio()) {
-    hideLandingAudioFallbackToggle();
+  if (!landingAudio) {
     return;
   }
 
@@ -80,8 +56,6 @@ function tryPlayLandingAudio() {
   if (playAttempt && typeof playAttempt.then === 'function') {
     playAttempt
       .then(() => {
-        markLandingAudioPlayed();
-        hideLandingAudioFallbackToggle();
         removeLandingAudioUnlockListeners();
       })
       .catch(() => {
@@ -90,9 +64,6 @@ function tryPlayLandingAudio() {
       });
     return;
   }
-
-  markLandingAudioPlayed();
-  hideLandingAudioFallbackToggle();
 }
 
 function tryPlayLandingAudioOnInteraction() {
@@ -362,10 +333,12 @@ aboutTileImages.forEach((image) => {
 window.addEventListener('load', () => {
   scheduleAboutMosaicSync();
 
-  if (!landingAudio || hasPlayedLandingAudio()) {
-    hideLandingAudioFallbackToggle();
+  if (!landingAudio) {
     return;
   }
+
+  // Keep the audio control visible so visitors can replay on demand.
+  showLandingAudioFallbackToggle();
 
   window.setTimeout(() => {
     tryPlayLandingAudio();

@@ -6,7 +6,7 @@
   <title>Arboles de la Antigua</title>
   <meta name="theme-color" content="#1f4f3a" />
   <meta name="robots" content="noindex" />
-  <meta http-equiv="refresh" content="3; url=small%20site.html" />
+  <meta http-equiv="refresh" content="3; url=small%20site%20%2B%20GA.html" />
   <style>
     :root {
       color-scheme: light;
@@ -100,7 +100,8 @@
   </style>
   <script>
     (function () {
-      var preferredTarget = 'small%20site.html';
+      var preferredTarget = 'small%20site%20%2B%20GA.html';
+      var fallbackTarget = 'small%20site.html';
 
       // Keep this file as a bootstrap entrypoint for NGINX index routing.
       window.location.replace(preferredTarget);
@@ -108,7 +109,7 @@
       // If navigation is blocked by browser policy, fallback remains available below.
       setTimeout(function () {
         if (window.location.pathname.endsWith('/index.html') || window.location.pathname === '/' || window.location.pathname === '') {
-          window.location.href = preferredTarget;
+          window.location.href = fallbackTarget;
         }
       }, 300);
     })();
@@ -123,12 +124,14 @@
       <p class="status">Preparando el sitio para usted</p>
       <p class="links">
         If redirect takes too long, open
-        <a href="small%20site.html">site</a>.
+        <a href="small%20site%20%2B%20GA.html">main site</a>
+        or
+        <a href="small%20site.html">alternate site</a>.
       </p>
       <noscript>
         <p class="links">
           JavaScript is disabled. Continue to
-          <a href="small%20site.html">site</a>.
+          <a href="small%20site%20%2B%20GA.html">main site</a>.
         </p>
       </noscript>
     </section>

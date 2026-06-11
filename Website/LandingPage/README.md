@@ -2,13 +2,6 @@
 
 Static multilingual landing page for the Arboles de la Antigua project.
 
-## Entry Files
-
-- `small site.html`
-  - Main site variant without analytics consent layer.
-- `small site + GA.html`
-  - Same site + GA4 + cookie consent modal.
-
 ## Tech Stack
 
 - HTML + CSS + vanilla JavaScript
@@ -69,24 +62,25 @@ Current modal routes include:
 - WhatsApp join modal (`join-whatsapp`)
 - about photo zoom (`about-photo`)
 
-## GA and Cookie Consent
+## Analytics
 
-Only in `small site + GA.html`:
+The site uses [Umami](https://umami.is/) for privacy-friendly, cookieless analytics.
 
-- Consent popup appears when no consent decision exists.
-- Consent choice saved in localStorage key `adla_cookie_consent_v1`.
-- Default tracking is denied until user accepts.
-- GA4 Measurement ID placeholder: `G-XXXXXXXXXX`.
+- The tracking script is embedded in `index.html` via a `<script>` tag pointing to the Umami cloud endpoint.
+- No cookies or personal data are collected.
+- The `data-website-id` attribute on the script tag identifies the site in the Umami dashboard.
 
-To enable analytics:
+Custom events are tracked with:
 
-1. Replace `G-XXXXXXXXXX` with your real GA4 ID.
-2. Keep consent flow enabled for privacy compliance.
+```js
+umami.track('event-name', { optional: 'payload' });
+```
+
+To disable tracking in development, remove or comment out the Umami `<script>` tag locally (it has no effect on page behavior) or make a small tweak to the browser: https://docs.umami.is/docs/exclude-my-own-visits
 
 ## Maintenance Checklist
 
 When editing features:
 
-1. Keep `small site.html` and `small site + GA.html` aligned unless intentional.
-2. Update `ARCHITECTURE.md` for structural or runtime changes.
-3. If text is translated, update all three locales in `js/translations.js`.
+1. Update `ARCHITECTURE.md` for structural or runtime changes.
+2. If text is translated, update all three locales in `js/translations.js`.

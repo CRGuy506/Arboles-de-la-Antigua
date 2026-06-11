@@ -7,16 +7,15 @@ Update it whenever structure, dependencies, runtime behavior, accessibility, or 
 
 ```mermaid
 graph TD
-  IDX[index.html] --> SS[small site.html]
-  IDXGA[index-GA.html] --> SSGA[small site + GA.html]
+  IDX[index.html] --> CSS[styles/main.css]
+  IDX --> TR[js/translations.js]
+  IDX --> TH[js/theme.js]
+  IDX --> LG[js/lang.js]
+  IDX --> MD[js/modal.js]
+  IDX --> AN[js/animations.js]
+  IDX --> APP[js/app.js]
 
-  SS --> CSS[styles/main.css]
-  SS --> TR[js/translations.js]
-  SS --> TH[js/theme.js]
-  SS --> LG[js/lang.js]
-  SS --> MD[js/modal.js]
-  SS --> AN[js/animations.js]
-  SS --> APP[js/app.js]
+  IDXGA[index-GA.html] --> SSGA[small site + GA.html]
 
   SSGA --> CSS
   SSGA --> TR
@@ -53,9 +52,9 @@ graph TD
 
 ## Directory Snapshot
 
-- `index.html`: non-GA bootstrap entrypoint redirecting to `small site.html`.
-- `index-GA.html`: GA bootstrap entrypoint redirecting to `small site + GA.html`.
-- `small site.html`: primary landing variant without analytics consent logic.
+- `index.html`: primary self-contained landing page
+- `index-GA.html`: redirect bootstrap entrypoint to `small site + GA.html`.
+- `index-redirect.html`: archived redirect bootstrap (former `index.html` behavior); not part of the production path.
 - `small site + GA.html`: landing variant with GA4 consent-mode and privacy UI.
 - `styles/main.css`: shared visual system, component styling, and responsive layout.
 - `js/translations.js`: `window.ADLA_TRANSLATIONS` dictionaries (`es`, `en`, `fr`).
@@ -71,21 +70,21 @@ graph TD
 ## Entry Points and Load Order
 
 - `index.html`
-  - Redirect bootstrap to `small site.html`.
-  - Used as default non-GA index route.
-
-- `index-GA.html`
-  - Redirect bootstrap to `small site + GA.html`.
-  - Provides explicit GA-enabled index route.
-
-- `small site.html`
-  - Loads shared stack in this order:
+  - Landing page; loads the full shared stack directly:
     1. `js/translations.js`
     2. `js/theme.js`
     3. `js/lang.js`
     4. `js/modal.js`
     5. `js/animations.js`
     6. `js/app.js`
+
+- `index-GA.html`
+  - Redirect bootstrap to `small site + GA.html`.
+  - Provides explicit GA-enabled index route.
+
+- `index-redirect.html`
+  - Archived redirect bootstrap (former `index.html`); kept for reference.
+  - Not linked from any production path.
 
 - `small site + GA.html`
   - Loads the same shared stack.
@@ -203,4 +202,5 @@ When behavior changes, update this file and include:
 
 ## Last Updated
 
+- 2026-06-10: `index.html` promoted to primary self-contained landing page; former redirect bootstrap archived as `index-redirect.html`; `small site.html` removed. `agendaItem8Detail` expanded to full rich HTML in all three locales.
 - 2026-06-03: Refreshed for index/index-GA bootstrap routing, tile-16 and mosaic updates, i18n/nav key changes, CTA/icon updates, consent timestamp + 180-day expiry model, privacy modal last-updated line, footer privacy pill placement, and theme/dark-mode contrast refinements.

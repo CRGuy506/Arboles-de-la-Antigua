@@ -7,44 +7,94 @@
   <link rel="stylesheet" href="assets/styles.css" />
 </head>
 <body data-theme="light">
-  <header class="top-frame">
+  <header class="navbar" id="navbar">
     <div class="site-shell">
-      <section class="hero" aria-label="Encabezado principal">
-        <div class="logo-group" aria-label="Logos">
-          <div class="logo" aria-label="Logo 1">Logo 1</div>
-          <div class="logo" aria-label="Logo 2">Logo 2</div>
-        </div>
+      <div class="navbar-inner">
+        <div class="navbar-row navbar-row-controls">
+          <a href="home.html" class="brand" aria-label="Árboles de la Antigua - Inicio">
+            <div class="brand-icon" aria-hidden="true">
+              <img src="Support/General/logoADLA.JPG" alt="" class="brand-logo brand-logo-adla" />
+            </div>
+            <span class="brand-text" aria-hidden="true">
+              <span>Árboles de</span>
+              <span>la Antigua</span>
+            </span>
+          </a>
 
-        <h1 class="title" data-i18n="title">Árboles de la Antigua</h1>
+          <div class="navbar-controls">
+            <div class="lang-dropdown" id="langDropdown">
+              <button type="button" class="lang-trigger" id="langTrigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="langMenu" aria-label="Seleccionar idioma">
+                <span class="lang-current">
+                  <span class="flag flag-es" id="langCurrentFlag" aria-hidden="true"></span>
+                  <span id="langCurrentLabel">ES</span>
+                </span>
+                <span class="lang-caret" aria-hidden="true">▼</span>
+              </button>
+              <div class="lang-menu" id="langMenu" role="listbox" hidden>
+                <button type="button" class="lang-option" data-lang="es" role="option">
+                  <span class="flag flag-es" aria-hidden="true"></span>
+                  <span>Español (ES)</span>
+                </button>
+                <button type="button" class="lang-option" data-lang="en" role="option">
+                  <span class="flag flag-en" aria-hidden="true"></span>
+                  <span>English (EN)</span>
+                </button>
+                <button type="button" class="lang-option" data-lang="fr" role="option">
+                  <span class="flag flag-fr" aria-hidden="true"></span>
+                  <span>Français (FR)</span>
+                </button>
+              </div>
+            </div>
 
-        <div class="right-tools">
-          <button type="button" class="btn btn-login" data-i18n="login">Iniciar sesión</button>
-          <div class="controls" aria-label="Controles del sitio">
-            <button id="langToggle" type="button" class="btn" aria-label="Cambiar idioma">EN</button>
-            <button id="themeToggle" type="button" class="btn" aria-label="Cambiar tema">Oscuro</button>
+            <button id="themeToggle" class="theme-toggle" aria-label="Cambiar tema" title="Cambiar tema">
+              <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
+              </svg>
+              <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"/>
+                <line x1="12" y1="1" x2="12" y2="3"/>
+                <line x1="12" y1="21" x2="12" y2="23"/>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                <line x1="1" y1="12" x2="3" y2="12"/>
+                <line x1="21" y1="12" x2="23" y2="12"/>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+              </svg>
+            </button>
+
+            <a href="#" class="btn-cta-sm" data-modal="join-whatsapp" data-i18n-attr="aria-label:joinChatAria">
+              <span class="cta-label" data-i18n="navCta">Acompáñanos</span>
+              <span class="cta-wa-icon" aria-hidden="true"></span>
+              <span class="cta-wa-fallback" aria-hidden="true">WA</span>
+            </a>
           </div>
-          <p class="small-note" data-i18n="loveTrees">La Antigua ama sus árboles</p>
         </div>
-      </section>
 
-      <nav class="nav-wrap" aria-label="Subpáginas">
-        <div class="main-nav">
-          <a class="active" href="home.html" data-i18n="sobre">Sobre</a>
-          <a href="plantas.html" data-i18n="plantas">Plantas</a>
-          <a href="cuadrillas.html" data-i18n="cuadrillas">Cuadrillas</a>
-          <a href="recursos.html" data-i18n="recursos">Recursos</a>
-          <a href="noticias.html" data-i18n="noticias">Noticias</a>
-          <a href="inventario.html" data-i18n="inventario">Inventario</a>
-          <a href="galeria.html" data-i18n="galeria">Galería</a>
-          <a href="calendario.html" data-i18n="calendario">Calendario</a>
-          <a href="contacto.html" data-i18n="contacto">Contacto</a>
+        <div class="navbar-row navbar-row-tabs">
+          <nav class="main-nav" aria-label="Subpáginas">
+            <ul class="nav-links">
+              <li><a href="home.html" data-i18n="home" data-nav-key="home">Inicio</a></li>
+              <li><a href="sobre.html" data-i18n="sobre" data-nav-key="sobre">Sobre</a></li>
+              <li><a href="plantas.html" data-i18n="plantas" data-nav-key="plantas">Plantas</a></li>
+              <li><a href="cuadrillas.html" data-i18n="cuadrillas" data-nav-key="cuadrillas">Cuadrillas</a></li>
+              <li><a href="recursos.html" data-i18n="recursos" data-nav-key="recursos">Recursos</a></li>
+              <li><a href="noticias.html" data-i18n="noticias" data-nav-key="noticias">Noticias</a></li>
+              <li><a href="inventario.html" data-i18n="inventario" data-nav-key="inventario">Inventario</a></li>
+              <li><a href="galeria.html" data-i18n="galeria" data-nav-key="galeria">Galería</a></li>
+              <li><a href="calendario.html" data-i18n="calendario" data-nav-key="calendario">Calendario</a></li>
+              <li><a href="contacto.html" data-i18n="contacto" data-nav-key="contacto">Contacto</a></li>
+            </ul>
+          </nav>
         </div>
-      </nav>
+      </div>
     </div>
   </header>
 
+
+
   <main class="site-shell" aria-label="Contenido principal">
-    <h2 class="page-title" data-i18n="pageHeadingSobre">Sobre Nosotros</h2>
+    <h2 class="page-title" data-i18n="pageHeadingHome">Inicio</h2>
     <section class="card-grid">
       <article class="card">
         <h2 data-i18n="descripcion">Descripción</h2>
@@ -61,6 +111,13 @@
     </section>
   </main>
 
+  <footer class="site-footer" aria-label="Pie de pagina">
+    <div class="site-shell">
+      <p class="site-footer-text">Arboles de la Antigua - Sitio FullSite en construccion</p>
+    </div>
+  </footer>
+
   <script src="assets/app.js"></script>
+  <script src="assets/modal.js"></script>
 </body>
 </html>

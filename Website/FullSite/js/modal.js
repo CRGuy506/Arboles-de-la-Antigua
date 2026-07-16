@@ -40,9 +40,49 @@ function ensureModalShell() {
 
 const { overlay: modalOverlay, content: modalContent } = ensureModalShell();
 let lockedScrollY = 0;
-const PDFJS_CDN_URL = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.7.76/build/pdf.min.mjs';
-const PDFJS_WORKER_CDN_URL = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.7.76/build/pdf.worker.min.mjs';
-let pdfJsModulePromise = null;
+let lastFocusedElement = null;
+let hiddenSiblings = [];
+
+function getFocusableElements() {
+  const selectors = [
+    'a[href]:not([tabindex="-1"])',
+    'button:not([disabled]):not([tabindex="-1"])',
+    'textarea:not([disabled]):not([tabindex="-1"])',
+    'input:not([disabled]):not([tabindex="-1"])',
+    'select:not([disabled]):not([tabindex="-1"])',
+    '[tabindex]:not([tabindex="-1"])'
+  ];
+
+  return Array.from(modalContent.querySelectorAll(selectors.join(','))).filter((el) => {
+    if (!(el instanceof HTMLElement)) {
+      return false;
+    }
+    return el.offsetParent !== null || el === document.activeElement;
+  });
+}
+
+function hideBackgroundFromAssistiveTech() {
+  hiddenSiblings = [];
+  Array.from(document.body.children).forEach((child) => {
+    if (child === modalOverlay) {
+      return;
+    }
+    const prev = child.getAttribute('aria-hidden');
+    hiddenSiblings.push({ element: child, prev });
+    child.setAttribute('aria-hidden', 'true');
+  });
+}
+
+function restoreBackgroundAssistiveTechState() {
+  hiddenSiblings.forEach(({ element, prev }) => {
+    if (prev === null) {
+      element.removeAttribute('aria-hidden');
+      return;
+    }
+    element.setAttribute('aria-hidden', prev);
+  });
+  hiddenSiblings = [];
+}
 
 function lockBodyScroll() {
   lockedScrollY = window.scrollY || window.pageYOffset || 0;
@@ -70,11 +110,13 @@ function unlockBodyScroll() {
  * @param {Object} config - { title: string, body: string (HTML), modalClass?: string }
  */
 function openModal(config) {
+  lastFocusedElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
   // Create close button
   const closeBtn = document.createElement('button');
   closeBtn.type = 'button';
   closeBtn.className = 'modal-close';
-  closeBtn.setAttribute('aria-label', 'Cerrar ventana');
+  closeBtn.setAttribute('aria-label', config.closeLabel || 'Cerrar ventana');
   closeBtn.innerHTML = '×';
   closeBtn.addEventListener('click', closeModal);
 
@@ -86,24 +128,56 @@ function openModal(config) {
   // Assemble and display modal
   modalContent.innerHTML = '';
   modalContent.className = 'modal';
+  modalContent.setAttribute('role', 'dialog');
+  modalContent.setAttribute('aria-modal', 'true');
+
+  const modalInstanceId = `adla-modal-${Date.now()}`;
+  const titleId = `${modalInstanceId}-title`;
+  const bodyId = `${modalInstanceId}-body`;
+  modalContent.removeAttribute('aria-label');
+  modalContent.removeAttribute('aria-labelledby');
+  modalContent.removeAttribute('aria-describedby');
+
   if (config.modalClass) {
     modalContent.classList.add(config.modalClass);
   }
   modalContent.appendChild(closeBtn);
+
   if (config.title) {
     const header = document.createElement('div');
     header.className = 'modal-header';
     const title = document.createElement('h2');
     title.className = 'modal-title';
+    title.id = titleId;
     title.textContent = config.title;
     header.appendChild(title);
     modalContent.appendChild(header);
+    modalContent.setAttribute('aria-labelledby', titleId);
+  } else if (config.ariaLabel) {
+    modalContent.setAttribute('aria-label', config.ariaLabel);
   }
+
+  body.id = bodyId;
   modalContent.appendChild(body);
+  modalContent.setAttribute('aria-describedby', bodyId);
 
   modalOverlay.classList.add('active');
   modalOverlay.setAttribute('aria-hidden', 'false');
   lockBodyScroll();
+  hideBackgroundFromAssistiveTech();
+
+  const focusables = getFocusableElements();
+  const focusTarget = typeof config.initialFocusSelector === 'string'
+    ? modalContent.querySelector(config.initialFocusSelector)
+    : null;
+
+  if (focusTarget instanceof HTMLElement) {
+    focusTarget.focus();
+  } else if (focusables.length) {
+    focusables[0].focus();
+  } else {
+    closeBtn.focus();
+  }
 }
 
 /**
@@ -113,86 +187,11 @@ function closeModal() {
   modalOverlay.classList.remove('active');
   modalOverlay.setAttribute('aria-hidden', 'true');
   unlockBodyScroll();
-}
+  restoreBackgroundAssistiveTechState();
 
-async function ensurePdfJsModule() {
-  if (!pdfJsModulePromise) {
-    pdfJsModulePromise = import(PDFJS_CDN_URL)
-      .then((mod) => {
-        mod.GlobalWorkerOptions.workerSrc = PDFJS_WORKER_CDN_URL;
-        return mod;
-      })
-      .catch((err) => {
-        pdfJsModulePromise = null;
-        throw err;
-      });
-  }
-
-  return pdfJsModulePromise;
-}
-
-async function renderPdfFirstPage(canvasEl, loadingEl, pdfUrl, messages = {}) {
-  const loadingText = messages.loading || 'Loading PDF preview...';
-  const fileProtocolText = messages.fileProtocol || 'PDF preview is not available in local file mode. Use the button to open the PDF or run the site with a local server (http://).';
-  const loadFailedText = messages.loadFailed || 'Could not display the PDF preview in this browser. Use the button to open the file.';
-
-  if (window.location.protocol === 'file:') {
-    if (loadingEl) {
-      loadingEl.textContent = fileProtocolText;
-    }
-    return;
-  }
-
-  const withTimeout = (promise, timeoutMs) => new Promise((resolve, reject) => {
-    const timer = setTimeout(() => {
-      reject(new Error('pdf_render_timeout'));
-    }, timeoutMs);
-
-    promise
-      .then((value) => {
-        clearTimeout(timer);
-        resolve(value);
-      })
-      .catch((err) => {
-        clearTimeout(timer);
-        reject(err);
-      });
-  });
-
-  try {
-    const pdfjs = await withTimeout(ensurePdfJsModule(), 5000);
-    const loadingTask = pdfjs.getDocument({ url: pdfUrl, withCredentials: false });
-    const pdf = await withTimeout(loadingTask.promise, 5000);
-    const page = await pdf.getPage(1);
-    const containerWidth = canvasEl.parentElement ? canvasEl.parentElement.clientWidth : 900;
-    const baseViewport = page.getViewport({ scale: 1 });
-    const scale = Math.min(Math.max(containerWidth / baseViewport.width, 0.55), 1.8);
-    const viewport = page.getViewport({ scale });
-    const outputScale = window.devicePixelRatio || 1;
-    const context = canvasEl.getContext('2d', { alpha: false });
-
-    canvasEl.width = Math.floor(viewport.width * outputScale);
-    canvasEl.height = Math.floor(viewport.height * outputScale);
-    canvasEl.style.width = `${Math.floor(viewport.width)}px`;
-    canvasEl.style.height = `${Math.floor(viewport.height)}px`;
-
-    const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
-    await page.render({
-      canvasContext: context,
-      viewport,
-      transform
-    }).promise;
-
-    if (loadingEl) {
-      loadingEl.style.display = 'none';
-    }
-  } catch (err) {
-    if (loadingEl) {
-      const isFileProtocol = window.location.protocol === 'file:';
-      loadingEl.textContent = isFileProtocol
-        ? fileProtocolText
-        : loadFailedText;
-    }
+  if (lastFocusedElement) {
+    lastFocusedElement.focus();
+    lastFocusedElement = null;
   }
 }
 
@@ -212,10 +211,109 @@ modalOverlay.addEventListener('touchmove', (e) => {
 
 // Close modal on Escape key press.
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+  if (!modalOverlay.classList.contains('active')) {
+    return;
+  }
+
+  if (e.key === 'Escape') {
     closeModal();
+    return;
+  }
+
+  if (e.key === 'Tab') {
+    const focusables = getFocusableElements();
+    if (!focusables.length) {
+      e.preventDefault();
+      return;
+    }
+
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = document.activeElement;
+
+    if (e.shiftKey && active === first) {
+      e.preventDefault();
+      last.focus();
+      return;
+    }
+
+    if (!e.shiftKey && active === last) {
+      e.preventDefault();
+      first.focus();
+    }
   }
 });
+
+window.ADLA_MODAL = {
+  openModal,
+  closeModal,
+  openTranslatedModal(config) {
+    const allTranslations = window.ADLA_TRANSLATIONS || {};
+    const lang = localStorage.getItem('adla-lang') || localStorage.getItem('siteLang') || 'es';
+    const fallback = allTranslations.es || {};
+    const t = allTranslations[lang] || fallback;
+
+    const title = config.title || t[config.titleKey] || fallback[config.titleKey] || '';
+    const body = config.body || t[config.bodyKey] || fallback[config.bodyKey] || '';
+
+    openModal({
+      title,
+      body,
+      modalClass: config.modalClass,
+      closeLabel: config.closeLabel || 'Cerrar ventana',
+      ariaLabel: config.ariaLabel,
+      initialFocusSelector: config.initialFocusSelector
+    });
+  }
+};
+
+function appendPdfModalViewer(bodyHtml, config) {
+  const {
+    pdfUrl,
+    openLinkCta,
+    loadingText,
+    pageLabel,
+    prevCta,
+    nextCta,
+    fileProtocolText,
+    loadFailedText
+  } = config;
+
+  if (!pdfUrl || /^\s*$/.test(pdfUrl)) {
+    return { body: bodyHtml, renderConfig: null };
+  }
+
+  if (window.ADLA_PDF_VIEWER && typeof window.ADLA_PDF_VIEWER.createViewer === 'function') {
+    const viewerBundle = window.ADLA_PDF_VIEWER.createViewer({
+      pdfUrl,
+      openLinkCta,
+      loadingText,
+      pageLabel,
+      prevCta,
+      nextCta,
+      fileProtocolText,
+      loadFailedText
+    });
+
+    if (viewerBundle && viewerBundle.html && viewerBundle.renderConfig) {
+      return {
+        body: `${bodyHtml}${viewerBundle.html}`,
+        renderConfig: viewerBundle.renderConfig
+      };
+    }
+  }
+
+  // Graceful fallback when PDF module is unavailable.
+  const fallbackBody = `${bodyHtml}
+    <p style="margin-top:0.8rem;text-align:center;">
+      <a href="${pdfUrl}" target="_blank" rel="noopener noreferrer" class="btn-ghost" style="display:inline-block;">
+        ${openLinkCta}
+      </a>
+    </p>
+  `;
+
+  return { body: fallbackBody, renderConfig: null };
+}
 
 // Hook for buttons with data-modal attribute to trigger modals.
 // Usage: <button data-modal="example">Click me</button>
@@ -226,7 +324,7 @@ document.addEventListener('click', (e) => {
     const modalId = trigger.getAttribute('data-modal');
 
     const allTranslations = window.ADLA_TRANSLATIONS || {};
-    const lang = localStorage.getItem('adla-lang') || 'es';
+    const lang = localStorage.getItem('adla-lang') || localStorage.getItem('siteLang') || 'es';
     const fallback = allTranslations.es || {};
     const t = allTranslations[lang] || fallback;
 
@@ -320,42 +418,26 @@ document.addEventListener('click', (e) => {
       const previewLoadingText = t.annualReportPreviewLoading || fallback.annualReportPreviewLoading || 'Loading PDF preview...';
       const previewFileProtocolText = t.annualReportPreviewFileProtocol || fallback.annualReportPreviewFileProtocol || 'PDF preview is not available in local file mode. Use the button to open the PDF or run the site with a local server (http://).';
       const previewLoadFailedText = t.annualReportPreviewLoadFailed || fallback.annualReportPreviewLoadFailed || 'Could not display the PDF preview in this browser. Use the button to open the file.';
+      const previewPageLabel = t.annualReportPreviewPageLabel || fallback.annualReportPreviewPageLabel || 'Page';
+      const previewPrevCta = t.annualReportPreviewPrevCta || fallback.annualReportPreviewPrevCta || 'Previous';
+      const previewNextCta = t.annualReportPreviewNextCta || fallback.annualReportPreviewNextCta || 'Next';
       const hasPdfUrl = reportPdfUrl && !/^\s*$/.test(reportPdfUrl);
 
       if (hasPdfUrl) {
         const encodedReportPdfUrl = encodeURI(reportPdfUrl.trim());
-        const viewerPdfUrl = encodedReportPdfUrl.includes('#')
-          ? encodedReportPdfUrl
-          : `${encodedReportPdfUrl}#page=1&view=FitH`;
-        const previewId = `annualReportPreview-${Date.now()}`;
-        const loadingId = `annualReportLoading-${Date.now()}`;
+        const pdfModal = appendPdfModalViewer(body, {
+          pdfUrl: encodedReportPdfUrl,
+          openLinkCta: reportPdfLinkCta,
+          loadingText: previewLoadingText,
+          pageLabel: previewPageLabel,
+          prevCta: previewPrevCta,
+          nextCta: previewNextCta,
+          fileProtocolText: previewFileProtocolText,
+          loadFailedText: previewLoadFailedText
+        });
 
-        annualReportRenderConfig = {
-          previewId,
-          loadingId,
-          viewerPdfUrl,
-          messages: {
-            loading: previewLoadingText,
-            fileProtocol: previewFileProtocolText,
-            loadFailed: previewLoadFailedText
-          }
-        };
-
-        body += `
-          <div style="position:relative; margin-top:0.9rem; border:1px solid color-mix(in srgb, var(--moss) 20%, transparent); border-radius:14px; overflow:auto; background:var(--warm-white); max-height:min(70vh,760px); padding:0.6rem; display:flex; justify-content:center;">
-            <div style="width:100%; display:flex; justify-content:center;">
-              <canvas id="${previewId}" style="display:block; max-width:100%; border-radius:8px; background:#fff;"></canvas>
-            </div>
-            <div id="${loadingId}" style="position:absolute; top:0.65rem; left:50%; transform:translateX(-50%); max-width:calc(100% - 1.2rem); text-align:center; font-size:0.84rem; color:color-mix(in srgb, var(--bark) 62%, transparent); background:color-mix(in srgb, var(--warm-white) 92%, transparent); padding:0.15rem 0.3rem; border-radius:8px;">
-              ${previewLoadingText}
-            </div>
-          </div>
-          <p style="margin-top:0.8rem;text-align:center;">
-            <a href="${encodedReportPdfUrl}" target="_blank" rel="noopener noreferrer" class="btn-ghost" style="display:inline-block;">
-              ${reportPdfLinkCta}
-            </a>
-          </p>
-        `;
+        body = pdfModal.body;
+        annualReportRenderConfig = pdfModal.renderConfig;
       }
     }
 
@@ -388,18 +470,18 @@ document.addEventListener('click', (e) => {
 
     openModal({ title, body });
 
-    if (annualReportRenderConfig) {
-      const canvasEl = document.getElementById(annualReportRenderConfig.previewId);
-      const loadingEl = document.getElementById(annualReportRenderConfig.loadingId);
-      if (canvasEl) {
-        renderPdfFirstPage(canvasEl, loadingEl, annualReportRenderConfig.viewerPdfUrl, annualReportRenderConfig.messages);
-      }
+    if (annualReportRenderConfig && window.ADLA_PDF_VIEWER && typeof window.ADLA_PDF_VIEWER.mount === 'function') {
+      window.ADLA_PDF_VIEWER.mount(annualReportRenderConfig);
     }
   }
 });
 
 // Keyboard support for non-button modal triggers with data-modal.
 document.addEventListener('keydown', (e) => {
+  if (!(e.target instanceof Element)) {
+    return;
+  }
+
   const trigger = e.target.closest('[data-modal]');
   if (!trigger) return;
 

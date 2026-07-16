@@ -75,7 +75,6 @@
           <nav class="main-nav" aria-label="Subpáginas">
             <ul class="nav-links">
               <li><a href="home.html" data-i18n="home" data-nav-key="home">Inicio</a></li>
-              <li><a href="sobre.html" data-i18n="sobre" data-nav-key="sobre">Sobre</a></li>
               <li><a href="plantas.html" data-i18n="plantas" data-nav-key="plantas">Plantas</a></li>
               <li><a href="cuadrillas.html" data-i18n="cuadrillas" data-nav-key="cuadrillas">Cuadrillas</a></li>
               <li><a href="recursos.html" data-i18n="recursos" data-nav-key="recursos">Recursos</a></li>
@@ -91,14 +90,104 @@
     </div>
   </header>
 
+  <section class="site-shell" aria-label="Bloque hero">
+    <div class="hero">
+      <div class="logo-group" aria-hidden="true">
+        <div class="brand-logo-wrap"><img src="Support/General/logoADLA.JPG" alt="" class="brand-logo-img" /></div>
+      </div>
+      <h2 class="title" data-i18n-html="heroTitleHtml">Cuidamos los<br /><span class="highlight">árboles</span><br />que nos cuidan.</h2>
+      <div class="right-tools">
+        <p class="small-note" data-i18n="heroSubtitle">Somos una organización comunitaria dedicada a la preservación, siembra y mantenimiento del patrimonio arbóreo.</p>
+      </div>
+    </div>
+  </section>
+
 
 
   <main class="site-shell" aria-label="Contenido principal">
-    <h2 class="page-title" data-i18n="pageHeadingCalendario">Calendario</h2>
-    <section class="card-grid">
+    <h1 class="page-title" data-i18n="pageHeadingCalendario">Calendario</h1>
+
+    <section class="calendar-layout">
       <article class="card">
-        <h2 data-i18n="calendarioSolo">Calendario</h2>
-        <p data-i18n="placeholder">Sección en construcción</p>
+        <h2 data-i18n="calendarioIntroTitle">Calendario de voluntariado</h2>
+        <p data-i18n="calendarioIntroBody">Use este calendario para ver las jornadas activas y apuntarse en los espacios de trabajo voluntario para las cuadrillas.</p>
+      </article>
+
+      <article class="card">
+        <h2 data-i18n="calendarioHowToTitle">Cómo apuntarse a cuadrillas</h2>
+        <ul>
+          <li data-i18n="calendarioStep1">Abra la actividad del día que le interese.</li>
+          <li data-i18n="calendarioStep2">Revise el tipo de apoyo requerido y el horario.</li>
+          <li data-i18n="calendarioStep3">Confirme su participación para reservar su espacio.</li>
+        </ul>
+        <p data-i18n="calendarioTip">Si no ve cupos, use el chat vecinal para coordinar apoyo en lista de espera.</p>
+      </article>
+    </section>
+
+    <section class="calendar-booking-section" aria-label="Panel de reservas">
+      <article class="card calendar-booking-card">
+        <div class="calendar-booking-header">
+          <h2 data-i18n="calBookingBoardTitle">Reserva tu espacio en cuadrillas</h2>
+          <a
+            href="https://calendar.google.com/calendar?cid=bXVtb3NmYW1AZ21haWwuY29t"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-cta-sm"
+            data-i18n="calendarioOpenFull"
+          >Abrir en Google Calendar</a>
+        </div>
+
+        <p class="calendar-booking-lead" data-i18n="calBookingBoardBody">Este panel muestra turnos disponibles y permite reservar directamente su participación voluntaria sin salir del sitio.</p>
+
+        <section class="month-calendar" data-i18n-attr="aria-label:calMonthRegionAria">
+          <div class="calendar-view-switch" role="group" data-i18n-attr="aria-label:calViewSwitchAria">
+            <button id="calendarViewMonth" type="button" class="btn-cta-sm btn-cta-secondary is-active" data-i18n="calViewMonth">Mes</button>
+            <button id="calendarViewYear" type="button" class="btn-cta-sm btn-cta-secondary" data-i18n="calViewYear">Año</button>
+          </div>
+
+          <div class="month-calendar-head">
+            <button id="calendarPrevMonth" type="button" class="btn-cta-sm btn-cta-secondary month-nav-btn" data-i18n-attr="aria-label:calMonthPrevAria" aria-label="Mes anterior">◀</button>
+            <h3 id="calendarMonthLabel" class="month-calendar-title" aria-live="polite"></h3>
+            <button id="calendarNextMonth" type="button" class="btn-cta-sm btn-cta-secondary month-nav-btn" data-i18n-attr="aria-label:calMonthNextAria" aria-label="Mes siguiente">▶</button>
+          </div>
+
+          <div id="calendarYearOverview" class="year-overview" hidden data-i18n-attr="aria-label:calYearOverviewAria"></div>
+          <div id="calendarWeekdayHead" class="month-weekdays" aria-hidden="true"></div>
+          <div id="calendarGrid" class="month-grid" role="grid" data-i18n-attr="aria-label:calMonthGridAria"></div>
+          <div id="calendarYearGrid" class="year-grid" hidden data-i18n-attr="aria-label:calYearGridAria"></div>
+
+          <div class="month-calendar-foot">
+            <div class="month-legend" data-i18n-attr="aria-label:calLegendAria">
+              <span class="legend-item"><span class="legend-dot legend-dot-shift"></span><span data-i18n="calLegendShift">Turno de cuadrilla</span></span>
+              <span class="legend-item"><span class="legend-dot legend-dot-important"></span><span data-i18n="calLegendImportant">Fecha importante</span></span>
+            </div>
+            <button id="calendarTodayBtn" type="button" class="btn-cta-sm btn-cta-secondary" data-i18n="calMonthToday">Ir a hoy</button>
+          </div>
+        </section>
+
+        <div class="booking-filters" role="region" aria-live="polite" data-i18n-attr="aria-label:calFilterRegionAria">
+          <div class="booking-field">
+            <label for="bookingCrewFilter" data-i18n="calFilterCrewLabel">Tipo de cuadrilla</label>
+            <select id="bookingCrewFilter">
+              <option value="all" data-i18n="calFilterAllCrews">Todas</option>
+              <option value="planting" data-i18n="crewPlanting">Siembra</option>
+              <option value="maintenance" data-i18n="crewMaintenance">Mantenimiento</option>
+              <option value="logistics" data-i18n="crewLogistics">Logística</option>
+            </select>
+          </div>
+
+          <div class="booking-field">
+            <label for="bookingDateFilter" data-i18n="calFilterDateLabel">Fecha</label>
+            <input id="bookingDateFilter" type="date" />
+          </div>
+
+          <div class="booking-field booking-field-action">
+            <button id="bookingClearFilters" type="button" class="btn-cta-sm btn-cta-secondary" data-i18n="calFilterClear">Limpiar filtros</button>
+          </div>
+        </div>
+
+        <p id="bookingStatus" class="booking-status" aria-live="polite" data-i18n="calStatusLoading">Cargando turnos...</p>
+        <div id="bookingList" class="booking-list" role="list" data-i18n-attr="aria-label:calBookingListAria"></div>
       </article>
     </section>
   </main>
@@ -109,7 +198,16 @@
     </div>
   </footer>
 
+  <!-- Legacy assets runtime kept for reference only during migration.
   <script src="assets/app.js"></script>
   <script src="assets/modal.js"></script>
+  -->
+  <script src="js/translations.js"></script>
+  <script src="js/lang.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/pdf-viewer.js"></script>
+  <script src="js/modal.js"></script>
+  <script src="js/calendar.js"></script>
 </body>
 </html>

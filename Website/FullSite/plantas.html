@@ -75,7 +75,6 @@
           <nav class="main-nav" aria-label="Subpáginas">
             <ul class="nav-links">
               <li><a href="home.html" data-i18n="home" data-nav-key="home">Inicio</a></li>
-              <li><a href="sobre.html" data-i18n="sobre" data-nav-key="sobre">Sobre</a></li>
               <li><a href="plantas.html" data-i18n="plantas" data-nav-key="plantas">Plantas</a></li>
               <li><a href="cuadrillas.html" data-i18n="cuadrillas" data-nav-key="cuadrillas">Cuadrillas</a></li>
               <li><a href="recursos.html" data-i18n="recursos" data-nav-key="recursos">Recursos</a></li>
@@ -91,10 +90,22 @@
     </div>
   </header>
 
+  <section class="site-shell" aria-label="Bloque hero">
+    <div class="hero">
+      <div class="logo-group" aria-hidden="true">
+        <div class="brand-logo-wrap"><img src="Support/General/logoADLA.JPG" alt="" class="brand-logo-img" /></div>
+      </div>
+      <h2 class="title" data-i18n-html="heroTitleHtml">Cuidamos los<br /><span class="highlight">árboles</span><br />que nos cuidan.</h2>
+      <div class="right-tools">
+        <p class="small-note" data-i18n="heroSubtitle">Somos una organización comunitaria dedicada a la preservación, siembra y mantenimiento del patrimonio arbóreo.</p>
+      </div>
+    </div>
+  </section>
+
 
 
   <main class="site-shell" aria-label="Contenido principal">
-    <h2 class="page-title" data-i18n="pageHeadingPlantas">Plantas</h2>
+    <h1 class="page-title" data-i18n="pageHeadingPlantas">Plantas</h1>
     <section class="card-grid">
       <article class="card">
         <h2 data-i18n="catalogo">Catálogo</h2>
@@ -117,7 +128,15 @@
     </div>
   </footer>
 
+  <!-- Legacy assets runtime kept for reference only during migration.
   <script src="assets/app.js"></script>
   <script src="assets/modal.js"></script>
+  -->
+  <script src="js/translations.js"></script>
+  <script src="js/lang.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/pdf-viewer.js"></script>
+  <script src="js/modal.js"></script>
 </body>
 </html>

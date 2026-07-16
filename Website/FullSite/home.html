@@ -75,7 +75,6 @@
           <nav class="main-nav" aria-label="Subpáginas">
             <ul class="nav-links">
               <li><a href="home.html" data-i18n="home" data-nav-key="home">Inicio</a></li>
-              <li><a href="sobre.html" data-i18n="sobre" data-nav-key="sobre">Sobre</a></li>
               <li><a href="plantas.html" data-i18n="plantas" data-nav-key="plantas">Plantas</a></li>
               <li><a href="cuadrillas.html" data-i18n="cuadrillas" data-nav-key="cuadrillas">Cuadrillas</a></li>
               <li><a href="recursos.html" data-i18n="recursos" data-nav-key="recursos">Recursos</a></li>
@@ -91,23 +90,232 @@
     </div>
   </header>
 
+  <!-- ══════════════════════════════════════════════
+       HERO
+  ══════════════════════════════════════════════ -->
+    <section
+      class="hero"
+      aria-label="Encabezado principal"
+      data-i18n-attr="aria-label:heroAria"
+    >
+      <div class="container">
+        <div class="hero-banner fade-up">
+          <img
+            src="Support/General/Hero.jpg"
+            alt="Residencial La Antigua con su entorno natural"
+            class="hero-banner-image"
+            fetchpriority="high"
+          />
+        </div>
+
+        <h1 class="page-title" data-i18n="pageHeadingHome" id="pageTitle">Inicio</h1>
+
+        <div class="hero-layout">
+          <div class="hero-content">
+            <div class="hero-tag fade-up">
+              <span class="section-eyebrow">🌿 Residencial la Antigua</span>
+            </div>
+
+            <h1
+              class="hero-title fade-up delay-1"
+              data-i18n-html="heroTitleHtml"
+            >
+              Cuidamos los<br /><span class="highlight">árboles</span><br />que
+              nos cuidan.
+            </h1>
+
+            <p class="hero-subtitle fade-up delay-2" data-i18n="heroSubtitle">
+              Somos una organización comunitaria dedicada a la preservación,
+              siembra y mantenimiento del patrimonio arbóreo del Residencial La
+              Antigua.
+            </p>
+
+            <div class="hero-actions fade-up delay-3">
+              <a href="#nosotros" class="btn-primary" data-i18n="heroPrimaryCta"
+                >Conoce nuestra misión</a
+              >
+              <a href="#evento" class="btn-ghost" data-i18n="heroSecondaryCta"
+                >Próximo evento</a
+              >
+            </div>
+          </div>
+
+          <div class="hero-visual float-anim" aria-hidden="true">
+            <div class="hero-card">
+              <div class="hero-card-title" data-i18n="heroCardTitle">
+                Patrimonio verde vivo
+              </div>
+              <div class="hero-card-sub" data-i18n="heroCardSub">
+                Residencial La Antigua, La Unión, Cartago, Costa Rica.
+              </div>
+              <div class="stat-row">
+                <div class="stat-box has-detail" tabindex="0">
+                  <div class="stat-number">62</div>
+                  <div class="stat-label" data-i18n="statPlantedLabel">
+                    Árboles y arbustos sembrados
+                  </div>
+                  <div class="stat-detail" data-i18n="statPlantedDetail">
+                    25 especies desde 2024
+                  </div>
+                </div>
+                <div class="stat-box has-detail" tabindex="0">
+                  <div class="stat-number">28</div>
+                  <div class="stat-label" data-i18n="statHousesLabel">
+                    Casas participantes
+                  </div>
+                  <div class="stat-detail" data-i18n="statHousesDetail">
+                    Hogares con siembras del proyecto
+                  </div>
+                </div>
+                <div class="stat-box has-detail" tabindex="0">
+                  <div class="stat-number">20+</div>
+                  <div class="stat-label" data-i18n="statVolunteersLabel">
+                    Vecinos voluntarios activos
+                  </div>
+                  <div class="stat-detail" data-i18n="statVolunteersDetail">
+                    Cuadrillas, grupo técnico, evento anual, asesoría forestal y
+                    digitalización
+                  </div>
+                </div>
+                <div class="stat-box has-detail" tabindex="0">
+                  <div class="stat-number">351</div>
+                  <div class="stat-label" data-i18n="statInventoryLabel">
+                    Registros en inventario
+                  </div>
+                  <div class="stat-detail" data-i18n="statInventoryDetail">
+                    Plantas en aceras del Residencial La Antigua
+                  </div>
+                </div>
+                <div class="stat-box has-detail" tabindex="0">
+                  <div class="stat-number">80+</div>
+                  <div class="stat-label" data-i18n="statChatLabel">
+                    Personas en el chat comunitario
+                  </div>
+                  <div class="stat-detail" data-i18n="statChatDetail">
+                    Representan alrededor de 75 casas
+                  </div>
+                </div>
+                <div class="stat-box stat-box-action">
+                  <button
+                    type="button"
+                    class="stat-action-btn"
+                    data-modal="annual-report"
+                    aria-label="Abrir reporte anual 2025 en PDF"
+                    data-i18n-attr="aria-label:statReportPdfAria"
+                  >
+                    <span class="stat-action-icon" aria-hidden="true">
+                      <svg
+                        viewBox="0 0 24 24"
+                        width="18"
+                        height="18"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"
+                          stroke="currentColor"
+                          stroke-width="1.7"
+                          stroke-linejoin="round"
+                        />
+                        <path
+                          d="M14 3v5h5"
+                          stroke="currentColor"
+                          stroke-width="1.7"
+                          stroke-linejoin="round"
+                        />
+                        <path
+                          d="M8 16h2.1c.7 0 1.2-.5 1.2-1.2s-.5-1.2-1.2-1.2H8V19"
+                          stroke="currentColor"
+                          stroke-width="1.6"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                        <path
+                          d="M12.8 19v-5.4h1.8c1.1 0 1.9.8 1.9 1.8s-.8 1.8-1.9 1.8h-1.8"
+                          stroke="currentColor"
+                          stroke-width="1.6"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                        <path
+                          d="M18.2 13.6h-1.9V19h1.9"
+                          stroke="currentColor"
+                          stroke-width="1.6"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </span>
+                    <span class="stat-action-label" data-i18n="statReportPdfCta"
+                      >Ver Reporte Anual 2025</span
+                    >
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
 
-  <main class="site-shell" aria-label="Contenido principal">
-    <h2 class="page-title" data-i18n="pageHeadingHome">Inicio</h2>
-    <section class="card-grid">
-      <article class="card">
-        <h2 data-i18n="descripcion">Descripción</h2>
-        <p data-i18n="placeholder">Sección en construcción</p>
-      </article>
-      <article class="card">
-        <h2 data-i18n="comites">Comités</h2>
-        <p data-i18n="placeholder">Sección en construcción</p>
-      </article>
-      <article class="card">
-        <h2 data-i18n="socios">Socios</h2>
-        <p data-i18n="placeholder">Sección en construcción</p>
-      </article>
+
+
+  <main aria-label="Contenido principal">
+    <section class="section-about" id="nosotros" aria-labelledby="nosotros-title">
+      <div class="container">
+        <div class="about-layout">
+          <div class="about-visual">
+            <div class="about-mosaic">
+              <div class="mosaic-tile mt-a"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-06.jpg" data-photo-title-key="aboutPhoto1Title" data-photo-alt-key="aboutPhoto1Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto1Aria;title:aboutPhoto1Aria"><img src="Support/Tiles/tile-06.jpg" alt="Foto 1" data-i18n-attr="alt:aboutPhoto1Alt" loading="lazy" /></button></div>
+              <div class="mosaic-tile mt-b"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-15.jpg" data-photo-title-key="aboutPhoto2Title" data-photo-alt-key="aboutPhoto2Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto2Aria;title:aboutPhoto2Aria"><img src="Support/Tiles/tile-15.jpg" alt="Foto 2" data-i18n-attr="alt:aboutPhoto2Alt" loading="lazy" /></button></div>
+              <div class="mosaic-tile mt-c"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-11.jpg" data-photo-title-key="aboutPhoto3Title" data-photo-alt-key="aboutPhoto3Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto3Aria;title:aboutPhoto3Aria"><img src="Support/Tiles/tile-11.jpg" alt="Foto 3" data-i18n-attr="alt:aboutPhoto3Alt" loading="lazy" /></button></div>
+              <div class="mosaic-tile mt-d"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-04.jpg" data-photo-title-key="aboutPhoto4Title" data-photo-alt-key="aboutPhoto4Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto4Aria;title:aboutPhoto4Aria"><img src="Support/Tiles/tile-04.jpg" alt="Foto 4" data-i18n-attr="alt:aboutPhoto4Alt" loading="lazy" /></button></div>
+              <div class="mosaic-tile mt-e"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-05.jpg" data-photo-title-key="aboutPhoto5Title" data-photo-alt-key="aboutPhoto5Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto5Aria;title:aboutPhoto5Aria"><img src="Support/Tiles/tile-05.jpg" alt="Foto 5" data-i18n-attr="alt:aboutPhoto5Alt" loading="lazy" /></button></div>
+              <div class="mosaic-tile mt-f"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-01.jpg" data-photo-title-key="aboutPhoto6Title" data-photo-alt-key="aboutPhoto6Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto6Aria;title:aboutPhoto6Aria"><img src="Support/Tiles/tile-01.jpg" alt="Foto 6" data-i18n-attr="alt:aboutPhoto6Alt" loading="lazy" /></button></div>
+              <div class="mosaic-tile mt-g"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-07.jpg" data-photo-title-key="aboutPhoto7Title" data-photo-alt-key="aboutPhoto7Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto7Aria;title:aboutPhoto7Aria"><img src="Support/Tiles/tile-07.jpg" alt="Foto 7" data-i18n-attr="alt:aboutPhoto7Alt" loading="lazy" /></button></div>
+              <div class="mosaic-spacer" aria-hidden="true"></div>
+              <div class="mosaic-tile mt-h"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-08.jpg" data-photo-title-key="aboutPhoto8Title" data-photo-alt-key="aboutPhoto8Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto8Aria;title:aboutPhoto8Aria"><img src="Support/Tiles/tile-08.jpg" alt="Foto 8" data-i18n-attr="alt:aboutPhoto8Alt" loading="lazy" /></button></div>
+              <div class="mosaic-tile mt-i"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-02.jpg" data-photo-title-key="aboutPhoto9Title" data-photo-alt-key="aboutPhoto9Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto9Aria;title:aboutPhoto9Aria"><img src="Support/Tiles/tile-02.jpg" alt="Foto 9" data-i18n-attr="alt:aboutPhoto9Alt" loading="lazy" /></button></div>
+              <div class="mosaic-tile mt-j"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-10.jpg" data-photo-title-key="aboutPhoto10Title" data-photo-alt-key="aboutPhoto10Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto10Aria;title:aboutPhoto10Aria"><img src="Support/Tiles/tile-10.jpg" alt="Foto 10" data-i18n-attr="alt:aboutPhoto10Alt" loading="lazy" /></button></div>
+              <div class="mosaic-tile mt-k"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-03.jpg" data-photo-title-key="aboutPhoto11Title" data-photo-alt-key="aboutPhoto11Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto11Aria;title:aboutPhoto11Aria"><img src="Support/Tiles/tile-03.jpg" alt="Foto 11" data-i18n-attr="alt:aboutPhoto11Alt" loading="lazy" /></button></div>
+              <div class="mosaic-tile mt-l"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-12.jpg" data-photo-title-key="aboutPhoto12Title" data-photo-alt-key="aboutPhoto12Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto12Aria;title:aboutPhoto12Aria"><img src="Support/Tiles/tile-12.jpg" alt="Foto 12" data-i18n-attr="alt:aboutPhoto12Alt" loading="lazy" /></button></div>
+              <div class="mosaic-tile mt-m"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-13.jpg" data-photo-title-key="aboutPhoto13Title" data-photo-alt-key="aboutPhoto13Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto13Aria;title:aboutPhoto13Aria"><img src="Support/Tiles/tile-13.jpg" alt="Foto 13" data-i18n-attr="alt:aboutPhoto13Alt" loading="lazy" /></button></div>
+              <div class="mosaic-spacer" aria-hidden="true"></div>
+              <div class="mosaic-tile mt-n"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-14.jpg" data-photo-title-key="aboutPhoto14Title" data-photo-alt-key="aboutPhoto14Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto14Aria;title:aboutPhoto14Aria"><img src="Support/Tiles/tile-14.jpg" alt="Foto 14" data-i18n-attr="alt:aboutPhoto14Alt" loading="lazy" /></button></div>
+              <div class="mosaic-tile mt-o"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-09.jpg" data-photo-title-key="aboutPhoto15Title" data-photo-alt-key="aboutPhoto15Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto15Aria;title:aboutPhoto15Aria"><img src="Support/Tiles/tile-09.jpg" alt="Foto 15" data-i18n-attr="alt:aboutPhoto15Alt" loading="lazy" /></button></div>
+              <div class="mosaic-tile mt-p"><button type="button" class="mosaic-fill about-photo-tile" data-modal="about-photo" data-photo-src="Support/Tiles/tile-16.jpg" data-photo-title-key="aboutPhoto16Title" data-photo-alt-key="aboutPhoto16Alt" aria-label="Abrir foto en tamaño completo" data-i18n-attr="aria-label:aboutPhoto16Aria;title:aboutPhoto16Aria"><img src="Support/Tiles/tile-16.jpg" alt="Foto 16" data-i18n-attr="alt:aboutPhoto16Alt" loading="lazy" /></button></div>
+              <div class="mosaic-tile mt-q"><div class="floating-badge" aria-hidden="true"><div class="badge-number">2024</div><div class="badge-text" data-i18n="aboutFounded">Fundados</div></div></div>
+            </div>
+          </div>
+
+          <div class="about-content">
+            <span class="section-eyebrow" data-i18n="aboutEyebrow">🌿 Quiénes somos</span>
+            <h2 class="about-heading" id="nosotros-title" data-i18n-html="aboutHeadingHtml">Iniciativa vecinal,<br /><em>impacto duradero.</em></h2>
+
+            <p class="about-body" data-i18n="aboutBody1">Árboles de La Antigua es una iniciativa vecinal voluntaria enfocada en promover y maximizar los beneficios de los árboles y arbustos urbanos dentro del residencial.</p>
+            <p class="about-body" data-i18n="aboutBody2">Trabajamos de forma organizada entre vecinos para sembrar, mantener y proteger el arbolado urbano, mejorando la calidad de vida de la comunidad mediante espacios más frescos, verdes y seguros.</p>
+            <p class="about-body" data-i18n="aboutBody3">Nuestro enfoque combina acción comunitaria, coordinación con la Municipalidad de la Unión y buenas prácticas para asegurar que el crecimiento del arbolado sea sostenible a largo plazo.</p>
+
+            <p class="about-chip-hint" data-i18n="aboutChipsHint">Toque un beneficio para ver más detalles.</p>
+
+            <div class="values-grid" role="list" aria-label="Principales beneficios" data-i18n-attr="aria-label:aboutValuesAria">
+              <div class="value-chip" role="button" tabindex="0" data-modal="chip-temp" aria-label="Ver detalles: Reducción de temperatura" data-i18n-attr="aria-label:valueTempAria"><span class="value-icon" aria-hidden="true">🌡️</span><span data-i18n="valueTemp">Reducción de temperatura</span></div>
+              <div class="value-chip" role="button" tabindex="0" data-modal="chip-landscape" aria-label="Ver detalles: Valor paisajístico y comunitario" data-i18n-attr="aria-label:valueLandscapeAria"><span class="value-icon" aria-hidden="true">🏡</span><span data-i18n="valueLandscape">Valor paisajístico y comunitario</span></div>
+              <div class="value-chip" role="button" tabindex="0" data-modal="chip-wildlife" aria-label="Ver detalles: Hábitat para vida silvestre" data-i18n-attr="aria-label:valueWildlifeAria"><span class="value-icon" aria-hidden="true">🦜</span><span data-i18n="valueWildlife">Hábitat para vida silvestre</span></div>
+              <div class="value-chip" role="button" tabindex="0" data-modal="chip-climate" aria-label="Ver detalles: Mitigación del cambio climático" data-i18n-attr="aria-label:valueClimateAria"><span class="value-icon" aria-hidden="true">🌍</span><span data-i18n="valueClimate">Mitigación del cambio climático</span></div>
+              <div class="value-chip" role="button" tabindex="0" data-modal="chip-cohesion" aria-label="Ver detalles: Cohesión y organización vecinal" data-i18n-attr="aria-label:valueCohesionAria"><span class="value-icon" aria-hidden="true">🤝</span><span data-i18n="valueCohesion">Cohesión y organización vecinal</span></div>
+              <div class="value-chip" role="button" tabindex="0" data-modal="chip-security" aria-label="Ver detalles: Seguridad comunitaria" data-i18n-attr="aria-label:valueSecurityAria"><span class="value-icon" aria-hidden="true">🛡️</span><span data-i18n="valueSecurity">Seguridad comunitaria</span></div>
+            </div>
+
+            <h3 class="about-subheading" data-i18n="aboutOrgHeading">Organización comunitaria</h3>
+            <p class="about-body" data-i18n="aboutOrgBody">El trabajo se organiza mediante agrupaciones voluntarias de vecinos, incluyendo cuadrillas de siembra y mantenimiento, un grupo técnico, un grupo social, asesoría forestal y apoyos puntuales según las necesidades del proyecto.</p>
+
+            <h3 class="about-subheading" data-i18n="aboutMunicipalHeading">Involucramiento municipal</h3>
+            <p class="about-body" data-i18n="aboutMunicipalBody">La iniciativa colabora con la Municipalidad de La Unión en actividades de arborización urbana y fortalecimiento comunitario. A mediano plazo, Árboles de La Antigua busca consolidar sus prácticas, herramientas y aprendizajes para apoyar a otras comunidades interesadas en desarrollar proyectos similares dentro y fuera del cantón.</p>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -117,7 +325,15 @@
     </div>
   </footer>
 
+  <!-- Legacy assets runtime kept for reference only during migration.
   <script src="assets/app.js"></script>
   <script src="assets/modal.js"></script>
+  -->
+  <script src="js/translations.js"></script>
+  <script src="js/lang.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/pdf-viewer.js"></script>
+  <script src="js/modal.js"></script>
 </body>
 </html>

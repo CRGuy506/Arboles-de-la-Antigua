@@ -9,7 +9,28 @@
  */
 
 const html = document.documentElement;
-const themeToggle = document.getElementById('themeToggle');
+const body = document.body;
+const themeToggleButton = document.getElementById('themeToggle');
+
+function getCurrentLocale() {
+  return localStorage.getItem('adla-lang') || localStorage.getItem('siteLang') || 'es';
+}
+
+function syncThemeLabel() {
+  if (typeof window.ADLA_updateThemeToggleLabel === 'function') {
+    window.ADLA_updateThemeToggleLabel(getCurrentLocale());
+  }
+}
+
+function applyTheme(theme) {
+  html.setAttribute('data-theme', theme);
+  if (body) {
+    body.setAttribute('data-theme', theme);
+  }
+  localStorage.setItem('adla-theme', theme);
+  localStorage.setItem('siteTheme', theme);
+  syncThemeLabel();
+}
 
 /**
  * Initialize theme system.
@@ -19,14 +40,14 @@ const themeToggle = document.getElementById('themeToggle');
  *   3. Default: light
  */
 function initTheme() {
-  const savedTheme = localStorage.getItem('adla-theme');
-  
+  const savedTheme = localStorage.getItem('adla-theme') || localStorage.getItem('siteTheme');
+
   if (savedTheme) {
-    html.setAttribute('data-theme', savedTheme);
+    applyTheme(savedTheme);
   } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    html.setAttribute('data-theme', 'dark');
+    applyTheme('dark');
   } else {
-    html.setAttribute('data-theme', 'light');
+    applyTheme('light');
   }
 }
 
@@ -34,18 +55,22 @@ function initTheme() {
 initTheme();
 
 // Handle theme toggle button click
-themeToggle.addEventListener('click', () => {
-  const currentTheme = html.getAttribute('data-theme');
-  const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
-  
-  html.setAttribute('data-theme', nextTheme);
-  localStorage.setItem('adla-theme', nextTheme);
-});
+if (themeToggleButton) {
+  themeToggleButton.addEventListener('click', () => {
+    const currentTheme = html.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(nextTheme);
+  });
+}
 
 // Listen for OS color-scheme changes (if user hasn't set preference)
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-  const savedTheme = localStorage.getItem('adla-theme');
+  const savedTheme = localStorage.getItem('adla-theme') || localStorage.getItem('siteTheme');
   if (!savedTheme) {
-    html.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+    applyTheme(e.matches ? 'dark' : 'light');
   }
+});
+
+document.addEventListener('adla-language-changed', () => {
+  syncThemeLabel();
 });
